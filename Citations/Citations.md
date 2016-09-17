@@ -8,9 +8,11 @@ If you come across any problems or suggestions, feel free to open an Issue for t
 
 ## Cite BlogClans!
 
-This script allows you to cite from Kate Cary's BlogClan articles and comments. After installing the script, there will be a button following each comment. Click the button, and the citation goes to your clipboard. Later you can paste it in the wiki.
+This script allows you to cite from Kate Cary's BlogClan articles and comments simply by clicking a button. After downloading and installing the script, there should be a "Cite" button following each comment. Click the button, and the citation goes to your clipboard. Later you can paste it in the wiki.
 
 ### CiteBlogClans
+
+Download Link: https://raw.githubusercontent.com/CXuesong/Cedarsong/master/Citations/CiteBlogClans.js
 
 This script has been used on zh Warriors Wiki. It generates the following text
 
@@ -21,6 +23,8 @@ This script has been used on zh Warriors Wiki. It generates the following text
 This syntax should also be suitable for Wikipedia.
 
 ### CiteBlogClansLite
+
+Download Link: https://raw.githubusercontent.com/CXuesong/Cedarsong/master/Citations/CiteBlogClansLite.js
 
 The script that might be suitable to use on en Warriors Wiki, with less details in the generated wikitext.
 
