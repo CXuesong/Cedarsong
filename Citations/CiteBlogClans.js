@@ -7,6 +7,7 @@
 // @match        http://blogclan.katecary.co.uk/*
 // @match        http://erinhunter.katecary.co.uk/*
 // @match        http://warriorswish.net/*
+// @match        https://web.archive.org/*/http://erinhunter.katecary.co.uk/*
 // @grant        GM_setClipboard
 // @require      https://code.jquery.com/jquery-2.1.4.min.js
 // ==/UserScript==
@@ -19,15 +20,23 @@
         return ds.substring(0, ds.indexOf("T"));
     }
     var WpDateMatcher = /.*?(?=\s*at)/i;
+    // Strip date form [DATE] at [TIME] expression
     function StripWpDate(expr)
     {
         var m = expr.match(WpDateMatcher);
         if (m)
         {
             var d = m[0];
-            return GetDate(new Date(d));
+            return NormalizeDate(d);
         }
         else return null;
+    }
+    function NormalizeDate(dateExpr)
+    {
+        if (!dateExpr) return null;
+        dateExpr = dateExpr.trim();
+        if (dateExpr.length > 0) return GetDate(new Date(dateExpr));
+        return null;
     }
     function Cleanup(expr)
     {
@@ -56,7 +65,7 @@
         return {
             title : Cleanup($(".entry-title").text()),
             author : Cleanup($("article .author").text()),
-            date :  GetDate(new Date($("article time").text().trim())),
+            date :  NormalizeDate($("article time").text()),
             anchor : null,
         };
     }
@@ -65,7 +74,7 @@
         return {
             title : Cleanup($(".entry-title").text()),
             author : Cleanup($(".entry .entry-author-link").text()),
-            date :  GetDate(new Date($(".entry .entry-date").text().trim())),
+            date :  NormalizeDate($(".entry .entry-date").text()),
             anchor : null,
         };
     }
@@ -84,8 +93,9 @@
     }
     ////////// Article //////////
     var data = articleParser();
+    data.work = "BlogClan";
     var citeButton = $('<a class="btn btn-default" href="#">引用文章</a>');
-    citeButton.attr("refdata", "<ref>{{Cite web |url=" + baseUrl + " |title=" + data.title + " |accessdate=" + now + " |author=" + data.author + " |date=" + data.date + " |quote= }}</ref>");
+    citeButton.attr("refdata", "<ref>{{Cite web |url=" + baseUrl + " |title=" + data.title + " |accessdate=" + now + " |author=" + data.author + " |work=" + data.work + " |date=" + (data.date || "") + " |quote= }}</ref>");
     citeButton.click(function (e) {
         GM_setClipboard($(this).attr("refdata"), "text");
     });
@@ -95,13 +105,14 @@
     var title = Cleanup($("#comments-title").text());
     $(".comment-body").each(function (index) {
         var data = commentParser(this);
+        data.work = "BlogClan";
         var citeButton = $('<a class="btn btn-default">引用评论</a>');
         var commentUrl = baseUrl + "#" + data.anchor;
         citeButton.click(function (e) {
             GM_setClipboard($(this).attr("refdata"), "text");
         });
         citeButton.attr("href", "#" + data.anchor);
-        citeButton.attr("refdata", "<ref>{{Cite web |url=" + commentUrl + " |title=" + title + " |accessdate=" + now + " |author=" + data.author + " |date=" + data.date + " |quote= }}</ref>");
+        citeButton.attr("refdata", "<ref>{{Cite web |url=" + commentUrl + " |title=" + title + " |accessdate=" + now + " |author=" + data.author + " |work=" + data.work + " |date=" + (data.date || "") + " |quote= }}</ref>");
         var panel = $(".reply", this);
         if (panel) panel.append(citeButton);
         else $(".comment-text", this).after(citeButton);
