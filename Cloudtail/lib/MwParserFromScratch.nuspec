@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>MwParserFromScratch</id>
+    <version>1.0.0.0</version>
+    <authors>CXuesong</authors>
+    <owners>CXuesong</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>MwParserFromScratch</description>
+    <copyright>Copyright CXuesong 2016</copyright>
+  </metadata>
+  <files>
+    <file src="MwParserFromScratch.dll" target="lib/netstandard1.1" />
+    <file src="MwParserFromScratch.pdb" target="lib/netstandard1.1" />
+  </files>
+</package>

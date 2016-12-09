@@ -1,0 +1,28 @@
+{
+  "title": "Cloudtail",
+  "version": "1.0.0-*",
+  "description": "An automatic wiki revision diff and report daemon dedicated to en Warriors Wiki.",
+  "authors": ["CXuesong"],
+  "copyright": "Copyright 2016 CXuesong",
+
+  "buildOptions": {
+    "emitEntryPoint": true
+  },
+
+  "dependencies": {
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.1"
+    },
+    "MwParserFromScratch": "1.0",
+    "DiffMatchPatch": "1.0",
+    "WikiDiffSummary": "1.0",
+    "WikiClientLibrary": "1.0"
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": "dnxcore50"
+    }
+  }
+}
