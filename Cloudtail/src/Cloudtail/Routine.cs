@@ -1,160 +1,61 @@
-Ôªøusing System;
-using System.Collections.Concurrent;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using WikiClientLibrary;
-using WikiClientLibrary.Client;
-using WikiClientLibrary.Generators;
 using System.Threading.Tasks.Dataflow;
+using WikiClientLibrary;
+using WikiClientLibrary.Generators;
 using WikiDiffSummary;
-using System.Reactive.Linq;
 
 namespace Cloudtail
 {
-    public class Routine
+    partial class Routine
     {
-        public const string EnApiEntryPoint = "http://warriors.wikia.com/api.php";
-        public const string ZhApiEntryPoint = "http://warriors.huiji.wiki/api.php";
-        public const string PageStatusFile = "pageStatus.json";
-
-        private static readonly JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        });
-
-        public WikiClient Client { get; } = new WikiClient();
-
-        /// <summary>
-        /// The oldest revision allowed when getting the revisions for diff.
-        /// </summary>
-        public DateTime OldestRevisionTimeStamp { get; set; } = DateTime.Now - TimeSpan.FromDays(30);
-
-        private Site siteEn;
-        private PageStatusDictionary pageStatus;
-
-        private readonly ObjectPool<WikitextBySectionComparer> comparerPool =
-            new ObjectPool<WikitextBySectionComparer>(() => new WikitextBySectionComparer());
-
-        private readonly ConcurrentBag<ModifiedPageInfo> modifiedPages = new ConcurrentBag<ModifiedPageInfo>();
-
-        public Routine()
-        {
-
-        }
-
-        private void LoadSettings()
-        {
-            if (!File.Exists(PageStatusFile))
-            {
-                pageStatus = new PageStatusDictionary();
-                return;
-            }
-            using (var r = File.OpenText(PageStatusFile))
-            using (var jr = new JsonTextReader(r))
-                pageStatus = serializer.Deserialize<PageStatusDictionary>(jr);
-        }
-
-        private void SaveSettings()
-        {
-            using (var w = File.CreateText(PageStatusFile))
-            using (var jw = new JsonTextWriter(w))
-                serializer.Serialize(jw, pageStatus);
-        }
-        private void PrintVerbose(string message)
-        {
-            PrintMessage(message, TraceLevel.Verbose);
-        }
-
-        private void PrintVerbose(object source, string message)
-        {
-            PrintMessage(source, TraceLevel.Verbose, message);
-        }
-
-        private void PrintVerbose(object source, string format, params object[] args)
-        {
-            PrintMessage(source, TraceLevel.Verbose, format, args);
-        }
-
-        private void PrintInfo(string message)
-        {
-            PrintMessage(message, TraceLevel.Info);
-        }
-
-        private void PrintInfo(object source, string message)
-        {
-            PrintMessage(source, TraceLevel.Info, message);
-        }
-
-        private void PrintInfo(object source, string format, params object[] args)
-        {
-            PrintMessage(source, TraceLevel.Info, format, args);
-        }
-
-        private void PrintMessage(object source, TraceLevel level, string format, params object[] args)
-        {
-            PrintMessage(source, level, string.Format(format, args));
-        }
-
-        private void PrintMessage(string message, TraceLevel level)
-        {
-            PrintMessage(null, level, message);
-        }
-
-        private static readonly object ConsoleLock = new object();
-
-        private void PrintMessage(object source, TraceLevel level, string message)
-        {
-            lock (ConsoleLock)
-            {
-                switch (level)
-                {
-                    case TraceLevel.Verbose:
-                        break;
-                    case TraceLevel.Info:
-                        Console.ForegroundColor = ConsoleColor.White;
-                        break;
-                    case TraceLevel.Warning:
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        break;
-                    case TraceLevel.Error:
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        break;
-                }
-                Console.WriteLine(source + ":" + message);
-                Console.ResetColor();
-            }
-        }
+        private volatile int CheckedPagesCount;
 
         public async Task PerformAsync()
         {
+            CheckedPagesCount = 0;
             LoadSettings();
-            siteEn = await Site.CreateAsync(Client, EnApiEntryPoint);
+            LoadModifiedPagesDump();
             //var siteZh = await Site.CreateAsync(client, ZhApiEntryPoint);
-            var gen = new CategoryMembersGenerator(siteEn, "Characters") {PagingSize = 20};
-            PrintInfo("Checking category‚Ä¶");
-            var pagesSource = gen.EnumPagesAsync().Take(50).ToObservable();
+            var gen = new CategoryMembersGenerator(SiteProvider.EnSite, "Characters")
+            {
+                PagingSize = 100,
+                MemberTypes = CategoryMemberTypes.Page
+            };
+            PrintInfo("Checking category°≠");
+            var pagesSource = gen.EnumPagesAsync().ToObservable();
             var sourceBlock = pagesSource.ToSourceBlock();
             var processorBlock = new ActionBlock<Page>(CheckPage);
             using (sourceBlock.LinkTo(processorBlock, new DataflowLinkOptions {PropagateCompletion = true}))
             {
+                using (var cts = new CancellationTokenSource())
+                {
+                    var d = AutoDumpStatus(cts.Token);
+                    cts.Cancel();
+                }
                 await processorBlock.Completion;
             }
             // 
-            while (true)
+            if (modifiedPages.Count > 0)
             {
-                ModifiedPageInfo p;
-                if (!modifiedPages.TryTake(out p)) break;
-
+                var report = GenerateReport();
+                SiteProvider.EnsureLoggedIn(SiteProvider.ZhSite);
+                var page = new Page(SiteProvider.ZhSite, "Project:Cloudtail/Sandbox");
+                page.Content = report;
+                PrintVerbose("Writing report°≠");
+                await page.UpdateContentAsync("∏¸–¬≤Ó“Ï±®∏Ê°£", false, true);
+                PrintInfo(page, "Report saved.");
             }
             // Cleanup
+            SaveSettings();
+            ClearModifiedPagesDump();
+            modifiedPages = null;
             comparerPool.Clear();
-            Debug.Assert(modifiedPages.Count == 0);
         }
 
         private async Task CheckPage(Page page)
@@ -165,7 +66,8 @@ namespace Cloudtail
                 PrintInfo(page, "Ignoring redirect.");
                 return;
             }
-            PrintVerbose(page, "Checking page.");
+            var counter = Interlocked.Increment(ref CheckedPagesCount);
+            PrintVerbose(page, "Checking page #{0}.", counter);
             var status = pageStatus.TryGetValue(page.Title);
             if (status == null)
             {
@@ -178,6 +80,23 @@ namespace Cloudtail
             if (page.LastRevision.TimeStamp > status.LastCheckedSections)
             {
                 await CheckSections(page);
+                status.LastCheckedSections = DateTime.Now;
+            }
+        }
+
+        private async Task AutoDumpStatus(CancellationToken ct)
+        {
+            var lastCollectionCount = modifiedPages.Count;
+            while (!ct.IsCancellationRequested)
+            {
+                await Task.Delay(AutomaticDumpInterval, ct);
+                if (modifiedPages.Count - lastCollectionCount > 3)
+                {
+                    SaveModifiedPagesDump();
+                    SaveSettings();
+                    PrintInfo("Automatic dump has been written.");
+                    lastCollectionCount = modifiedPages.Count;
+                }
             }
         }
 
@@ -186,8 +105,8 @@ namespace Cloudtail
             Debug.Assert(page != null);
             PrintVerbose(page, "Checking revisions.");
             var status = pageStatus[page.Title];
-            var rev1gen = new RevisionGenerator(page) {StartTime = status.LastCheckedSections, PagingSize = 1};
-            var rev2gen = new RevisionGenerator(page) {PagingSize = 1};
+            var rev1gen = new RevisionGenerator(page) { StartTime = status.LastCheckedSections, PagingSize = 1 };
+            var rev2gen = new RevisionGenerator(page) { PagingSize = 1 };
             var revs = await Task.WhenAll(rev1gen.EnumRevisionsAsync(PageQueryOptions.FetchContent).FirstOrDefault(),
                 rev2gen.EnumRevisionsAsync(PageQueryOptions.FetchContent).FirstOrDefault());
             var rev1 = revs[0];
@@ -198,32 +117,36 @@ namespace Cloudtail
             var fdiff = FormatDiff(diff);
             if (fdiff == null) return;
             PrintInfo(page, "Change detected,\n{0}", fdiff.Item1);
-            modifiedPages.Add(new ModifiedPageInfo(page.Title, fdiff.Item1, fdiff.Item2));
+            modifiedPages.Add(new ModifiedPageInfo(page.Title, fdiff.Item1, fdiff.Item2, rev1, rev2));
         }
 
-        // <User-friendly wikitext output, added characters>
-        private Tuple<string, int> FormatDiff(IEnumerable<SectionDiff> diffs)
+        private Tuple<string, float> FormatDiff(IEnumerable<SectionDiff> diffs)
         {
             var sb = new StringBuilder();
-            var addedChars = 0;
+            var priority = 0f;
             var anyChanges = false;
-            Func<SectionPath, bool> Interesting = path => path == SectionPath.Empty || path.Contains("Trivia");
+            Func<SectionPath, float> PriorityFactor = path =>
+            {
+                if (path == SectionPath.Empty) return 1;
+                if (path.Contains("Trivia")) return 2;
+                return -1;
+            };
             foreach (var d in diffs)
             {
                 if (d.Status == SectionDiffStatus.Identical) continue;
-                if (d.Section1 != null && Interesting(d.Section1.Path)
-                    || d.Section2 != null && Interesting(d.Section2.Path))
+                var pf = PriorityFactor(d.Section1?.Path ?? d.Section2?.Path);
+                if (pf > 0)
                 {
                     anyChanges = true;
                     switch (d.Status)
                     {
                         case SectionDiffStatus.Added:
                             sb.AppendLine(";" + FormatSectionPath(d.Section2.Path));
-                            sb.Append(":New section. ");
+                            sb.Append(":–¬–°Ω⁄°£");
                             break;
                         case SectionDiffStatus.Removed:
                             sb.AppendLine(";" + FormatSectionPath(d.Section2.Path));
-                            sb.Append(":Removed section. ");
+                            sb.Append(":–°Ω⁄±ª“∆≥˝°£");
                             break;
                         case SectionDiffStatus.WhitespaceModified:
                         case SectionDiffStatus.Modified:
@@ -231,9 +154,9 @@ namespace Cloudtail
                             sb.AppendLine(";" + FormatSectionPath(d.Section1.Path));
                             sb.Append(":");
                             if (d.Section1.Path != d.Section2.Path)
-                                sb.Append("Renamed to '''" + FormatSectionPath(d.Section2.Path) + "'''. ");
+                                sb.Append("÷ÿ√¸√˚Œ™'''" + FormatSectionPath(d.Section2.Path) + "'''°£");
                             if (d.Status == SectionDiffStatus.WhitespaceModified)
-                                sb.Append("Whitespace modified.");
+                                sb.Append("ø’∞◊±‰ªØ°£");
                             break;
                     }
                     if (d.AddedChars > 0 || d.RemovedChars > 0)
@@ -243,35 +166,42 @@ namespace Cloudtail
                         if (d.RemovedChars > 0) sb.Append("-" + d.RemovedChars + " ");
                         sb.Append(')');
                     }
-                    addedChars += d.AddedChars;
+                    sb.AppendLine();
+                    priority += d.AddedChars*pf;
                 }
             }
             if (!anyChanges) return null;
-            return Tuple.Create(sb.ToString(), addedChars);
+            return Tuple.Create(sb.ToString(), priority);
         }
 
         private string FormatSectionPath(SectionPath path)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
-            if (path == SectionPath.Empty) return "[Leading]";
+            if (path == SectionPath.Empty) return "[µº”Ô]";
             return path.ToString();
         }
-    }
 
-    public class ModifiedPageInfo
-    {
-        public ModifiedPageInfo(string title, string message, int priority)
+        private string GenerateReport()
         {
-            if (title == null) throw new ArgumentNullException(nameof(title));
-            Title = title;
-            Message = message;
-            Priority = priority;
+            var builder = new StringBuilder();
+            var ordered = modifiedPages.OrderByDescending(p => p.Priority);
+            builder.AppendFormat("“—æ≠¥¶¿Ì{0}∏ˆ“≥√Ê£¨∆‰÷–”–{1}∏ˆ“≥√Ê∑¢…˙¡Àœ‘÷¯±‰ªØ°£±®∏Ê…˙≥…”⁄{2}°£\n\n",
+                CheckedPagesCount, modifiedPages.Count, DateTime.Now);
+            foreach (var p in ordered)
+            {
+                builder.AppendFormat("== [[:en:{0}]] ==\n", p.Title);
+                builder.AppendLine("<small>");
+                builder.AppendFormat(":ºÏ≤È”⁄£∫{0}\n:∞Ê±æ1£∫{1}\n:∞Ê±æ2£∫{2}\n", p.CheckedTime, p.RevisionTime1, p.RevisionTime2);
+                builder.AppendFormat(":[{{{{Diff|:en:{0}|{2}|{1}|œ‘ æ≤Ó“Ï}}}}]", p.Title, p.RevisionId1, p.RevisionId2);
+                builder.AppendLine("</small>");
+                builder.AppendLine();
+                builder.Append(p.Message.TrimEnd());
+                builder.AppendLine();
+                builder.AppendLine();
+            }
+            builder.AppendLine();
+            builder.Append("__NOEDITSECTION__\n");
+            return builder.ToString();
         }
-
-        public int Priority { get; }
-
-        public string Title { get; }
-
-        public string Message { get; }
     }
 }
