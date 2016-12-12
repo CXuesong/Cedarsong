@@ -103,7 +103,7 @@
     ////////// Comments //////////
     // Decide the title
     var title = Cleanup($("#comments-title").text());
-    $(".comment-body").each(function (index) {
+    $(".commentlist .comment-body").each(function (index) {
         var data = commentParser(this);
         data.work = "BlogClan";
         var citeButton = $('<a class="btn btn-default">引用评论</a>');
@@ -114,7 +114,11 @@
         citeButton.attr("href", "#" + data.anchor);
         citeButton.attr("refdata", "<ref>{{Cite web |url=" + commentUrl + " |title=" + title + " |accessdate=" + now + " |author=" + data.author + " |work=" + data.work + " |date=" + (data.date || "") + " |quote= }}</ref>");
         var panel = $(".reply", this);
-        if (panel) panel.append(citeButton);
-        else $(".comment-text", this).after(citeButton);
+        if (panel.length > 0)
+        {
+            panel.append(citeButton);
+        } else {
+            $(".comment-text", this).after(citeButton);
+        }
     });
 })();

@@ -242,5 +242,5 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
-_private/
-work/
+_private
+work
