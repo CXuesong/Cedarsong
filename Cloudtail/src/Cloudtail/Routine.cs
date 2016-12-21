@@ -27,7 +27,7 @@ namespace Cloudtail
                 PagingSize = 100,
                 MemberTypes = CategoryMemberTypes.Page
             };
-            PrintInfo("Checking category…");
+            Logger.Cloudtail.Info(this, "Checking category…");
             var pagesSource = gen.EnumPagesAsync().ToObservable();
             var sourceBlock = pagesSource.ToSourceBlock();
             var processorBlock = new ActionBlock<Page>(CheckPage);
@@ -47,9 +47,9 @@ namespace Cloudtail
                 SiteProvider.EnsureLoggedIn(SiteProvider.ZhSite);
                 var page = new Page(SiteProvider.ZhSite, "Project:Cloudtail/Sandbox");
                 page.Content = report;
-                PrintVerbose("Writing report…");
+                Logger.Cloudtail.Trace(this, "Writing report…");
                 await page.UpdateContentAsync("更新差异报告。", false, true);
-                PrintInfo(page, "Report saved.");
+                Logger.Cloudtail.Info(page, "Report saved.");
             }
             // Cleanup
             SaveSettings();
@@ -63,11 +63,11 @@ namespace Cloudtail
             Debug.Assert(page != null);
             if (page.IsRedirect)
             {
-                PrintInfo(page, "Ignoring redirect.");
+                Logger.Cloudtail.Warn(page, "Ignoring redirect.");
                 return;
             }
             var counter = Interlocked.Increment(ref CheckedPagesCount);
-            PrintVerbose(page, "Checking page #{0}.", counter);
+            Logger.Cloudtail.Trace(page, "Checking page #{0}.", counter);
             var status = pageStatus.TryGetValue(page.Title);
             if (status == null)
             {
@@ -94,7 +94,7 @@ namespace Cloudtail
                 {
                     SaveModifiedPagesDump();
                     SaveSettings();
-                    PrintInfo("Automatic dump has been written.");
+                    Logger.Cloudtail.Info(this, "Automatic dump has been written.");
                     lastCollectionCount = modifiedPages.Count;
                 }
             }
@@ -103,7 +103,7 @@ namespace Cloudtail
         private async Task CheckSections(Page page)
         {
             Debug.Assert(page != null);
-            PrintVerbose(page, "Checking revisions.");
+            Logger.Cloudtail.Trace(page, "Checking revisions.");
             var status = pageStatus[page.Title];
             var rev1gen = new RevisionGenerator(page) { StartTime = status.LastCheckedSections, PagingSize = 1 };
             var rev2gen = new RevisionGenerator(page) { PagingSize = 1 };
@@ -116,7 +116,7 @@ namespace Cloudtail
             comparerPool.Put(cmp);
             var fdiff = FormatDiff(diff);
             if (fdiff == null) return;
-            PrintInfo(page, "Change detected,\n{0}", fdiff.Item1);
+            Logger.Cloudtail.Info(page, "Change detected,\n{0}", fdiff.Item1);
             modifiedPages.Add(new ModifiedPageInfo(page.Title, fdiff.Item1, fdiff.Item2, rev1, rev2));
         }
 

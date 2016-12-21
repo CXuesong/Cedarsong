@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Cloudtail": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "purge test"
     }
   }
 }

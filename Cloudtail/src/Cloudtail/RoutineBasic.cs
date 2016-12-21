@@ -51,7 +51,7 @@ namespace Cloudtail
             {
                 return default(T);
             }
-            PrintVerbose(this, "Load {0}", fileName);
+            Logger.Cloudtail.Trace(this, "Load {0}", fileName);
             using (var r = File.OpenText(fileName))
             using (var jr = new JsonTextReader(r))
                 return serializer.Deserialize<T>(jr);
@@ -62,7 +62,7 @@ namespace Cloudtail
             using (var w = File.CreateText(fileName))
             using (var jw = new JsonTextWriter(w))
                 serializer.Serialize(jw, content);
-            PrintVerbose(this, "Saved {0}", fileName);
+            Logger.Cloudtail.Trace(this, "Saved {0}", fileName);
         }
 
         private static void DeleteFile(string fileName)
@@ -94,71 +94,6 @@ namespace Cloudtail
         private void SaveModifiedPagesDump()
         {
             SaveJson(ModifiedPagesDumpFile, modifiedPages);
-        }
-
-        private void PrintVerbose(string message)
-        {
-            PrintMessage(message, TraceLevel.Verbose);
-        }
-
-        private void PrintVerbose(object source, string message)
-        {
-            PrintMessage(source, TraceLevel.Verbose, message);
-        }
-
-        private void PrintVerbose(object source, string format, params object[] args)
-        {
-            PrintMessage(source, TraceLevel.Verbose, format, args);
-        }
-
-        private void PrintInfo(string message)
-        {
-            PrintMessage(message, TraceLevel.Info);
-        }
-
-        private void PrintInfo(object source, string message)
-        {
-            PrintMessage(source, TraceLevel.Info, message);
-        }
-
-        private void PrintInfo(object source, string format, params object[] args)
-        {
-            PrintMessage(source, TraceLevel.Info, format, args);
-        }
-
-        private void PrintMessage(object source, TraceLevel level, string format, params object[] args)
-        {
-            PrintMessage(source, level, string.Format(format, args));
-        }
-
-        private void PrintMessage(string message, TraceLevel level)
-        {
-            PrintMessage(this, level, message);
-        }
-
-        private static readonly object ConsoleLock = new object();
-
-        private void PrintMessage(object source, TraceLevel level, string message)
-        {
-            lock (ConsoleLock)
-            {
-                switch (level)
-                {
-                    case TraceLevel.Verbose:
-                        break;
-                    case TraceLevel.Info:
-                        Console.ForegroundColor = ConsoleColor.White;
-                        break;
-                    case TraceLevel.Warning:
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        break;
-                    case TraceLevel.Error:
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        break;
-                }
-                Console.WriteLine(source + ":" + message);
-                Console.ResetColor();
-            }
         }
     }
 
