@@ -27,7 +27,7 @@ namespace Cloudtail
                 PagingSize = 100,
                 MemberTypes = CategoryMemberTypes.Page
             };
-            Logger.Cloudtail.Info(this, "Checking category¡­");
+            Logger.Cloudtail.Info(this, "Checking categoryâ€¦");
             var pagesSource = gen.EnumPagesAsync().ToObservable();
             var sourceBlock = pagesSource.ToSourceBlock();
             var processorBlock = new ActionBlock<Page>(CheckPage);
@@ -36,9 +36,9 @@ namespace Cloudtail
                 using (var cts = new CancellationTokenSource())
                 {
                     var d = AutoDumpStatus(cts.Token);
-                    cts.Cancel();
+                    await processorBlock.Completion;
+                    cts.Cancel();                
                 }
-                await processorBlock.Completion;
             }
             // 
             if (modifiedPages.Count > 0)
@@ -47,8 +47,8 @@ namespace Cloudtail
                 SiteProvider.EnsureLoggedIn(SiteProvider.ZhSite);
                 var page = new Page(SiteProvider.ZhSite, "Project:Cloudtail/Sandbox");
                 page.Content = report;
-                Logger.Cloudtail.Trace(this, "Writing report¡­");
-                await page.UpdateContentAsync("¸üĞÂ²îÒì±¨¸æ¡£", false, true);
+                Logger.Cloudtail.Trace(this, "Writing reportâ€¦");
+                await page.UpdateContentAsync("æ›´æ–°å·®å¼‚æŠ¥å‘Šã€‚", false, true);
                 Logger.Cloudtail.Info(page, "Report saved.");
             }
             // Cleanup
@@ -142,11 +142,11 @@ namespace Cloudtail
                     {
                         case SectionDiffStatus.Added:
                             sb.AppendLine(";" + FormatSectionPath(d.Section2.Path));
-                            sb.Append(":ĞÂĞ¡½Ú¡£");
+                            sb.Append(":æ–°å°èŠ‚ã€‚");
                             break;
                         case SectionDiffStatus.Removed:
                             sb.AppendLine(";" + FormatSectionPath(d.Section2.Path));
-                            sb.Append(":Ğ¡½Ú±»ÒÆ³ı¡£");
+                            sb.Append(":å°èŠ‚è¢«ç§»é™¤ã€‚");
                             break;
                         case SectionDiffStatus.WhitespaceModified:
                         case SectionDiffStatus.Modified:
@@ -154,9 +154,9 @@ namespace Cloudtail
                             sb.AppendLine(";" + FormatSectionPath(d.Section1.Path));
                             sb.Append(":");
                             if (d.Section1.Path != d.Section2.Path)
-                                sb.Append("ÖØÃüÃûÎª'''" + FormatSectionPath(d.Section2.Path) + "'''¡£");
+                                sb.Append("é‡å‘½åä¸º'''" + FormatSectionPath(d.Section2.Path) + "'''ã€‚");
                             if (d.Status == SectionDiffStatus.WhitespaceModified)
-                                sb.Append("¿Õ°×±ä»¯¡£");
+                                sb.Append("ç©ºç™½å˜åŒ–ã€‚");
                             break;
                     }
                     if (d.AddedChars > 0 || d.RemovedChars > 0)
@@ -177,7 +177,7 @@ namespace Cloudtail
         private string FormatSectionPath(SectionPath path)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
-            if (path == SectionPath.Empty) return "[µ¼Óï]";
+            if (path == SectionPath.Empty) return "[å¯¼è¯­]";
             return path.ToString();
         }
 
@@ -185,14 +185,14 @@ namespace Cloudtail
         {
             var builder = new StringBuilder();
             var ordered = modifiedPages.OrderByDescending(p => p.Priority);
-            builder.AppendFormat("ÒÑ¾­´¦Àí{0}¸öÒ³Ãæ£¬ÆäÖĞÓĞ{1}¸öÒ³Ãæ·¢ÉúÁËÏÔÖø±ä»¯¡£±¨¸æÉú³ÉÓÚ{2}¡£\n\n",
+            builder.AppendFormat("å·²ç»å¤„ç†{0}ä¸ªé¡µé¢ï¼Œå…¶ä¸­æœ‰{1}ä¸ªé¡µé¢å‘ç”Ÿäº†æ˜¾è‘—å˜åŒ–ã€‚æŠ¥å‘Šç”Ÿæˆäº{2}ã€‚\n\n",
                 CheckedPagesCount, modifiedPages.Count, DateTime.Now);
             foreach (var p in ordered)
             {
                 builder.AppendFormat("== [[:en:{0}]] ==\n", p.Title);
                 builder.AppendLine("<small>");
-                builder.AppendFormat(":¼ì²éÓÚ£º{0}\n:°æ±¾1£º{1}\n:°æ±¾2£º{2}\n", p.CheckedTime, p.RevisionTime1, p.RevisionTime2);
-                builder.AppendFormat(":[{{{{Diff|:en:{0}|{2}|{1}|ÏÔÊ¾²îÒì}}}}]", p.Title, p.RevisionId1, p.RevisionId2);
+                builder.AppendFormat(":æ£€æŸ¥äºï¼š{0}\n:ç‰ˆæœ¬1ï¼š{1}\n:ç‰ˆæœ¬2ï¼š{2}\n", p.CheckedTime, p.RevisionTime1, p.RevisionTime2);
+                builder.AppendFormat(":[{{{{Diff|:en:{0}|{2}|{1}|æ˜¾ç¤ºå·®å¼‚}}}}]", p.Title, p.RevisionId1, p.RevisionId2);
                 builder.AppendLine("</small>");
                 builder.AppendLine();
                 builder.Append(p.Message.TrimEnd());
