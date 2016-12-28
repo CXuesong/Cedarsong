@@ -1,0 +1,24 @@
+# Prefixes
+Fire-
+White-
+Gray-
+Blue-
+Dark-
+Long-
+Short-
+
+# Suffixes
+-kit
+-paw
+-star
+-heart
+-pelt
+-nose
+-ear
+-tail
+-leg
+-fur
+-whisker
+-belly
+
+-light
