@@ -1,25 +1,29 @@
+# 2016-12-29
 Acorn Fur
 Acornpaw
 Acorntail
 Adderfang
 Adderkit
-Adderpaw
+Adderpaw (WC)
 Alder
-Alderpaw
+Alderheart
 Algernon
 Amberclaw
 Amberleaf
 Ambermoon
-Antpelt
+Antpelt (SC)
+Antpelt (WC)
 Apple Blossom
 Appledawn
 Appledusk
 Applefrost
-Applefur
+Applefur (NP)
+Applefur (TF)
 Arc
 Archeye
 Ashfoot
-Ashfur
+Ashfur (SC)
+Ashfur (TC)
 Ashheart
 Aspenfall
 Aspentail
@@ -28,30 +32,34 @@ Barkface
 Barley
 Bee
 Beech
-Beechfur
-Beechpaw
+Beechfur (RC)
+Beechfur (TC)
+Beechpaw (SC)
 Beechstar
-Beepaw
+Beenose
 Beetail
 Beetle
 Beetlenose
 Beetlewhisker
-Bella
-Bellapaw
+Bella (KP)
+Bellaleaf
 Benny
 Berryheart
 Berrynose
 Bess
+Betsy
 Billystorm
 Birch
 Birchface
 Birchfall
-Birchkit
-Birchstar
+Birchpaw (SC)
+Birchstar (RC)
+Birchstar (SC)
+Birchstar (WC)
 Bird That Rides the Wind
 Birdflight
-Birdpaw
 Birdsong
+Birdwing
 Birdy
 Black Ear
 Blackbee
@@ -62,9 +70,10 @@ Blizzardwing
 Bloomheart
 Blossom
 Blossomfall
-Blossomkit
-Blossompaw
+Blossomheart
+Blossomkit (SC)
 Blue Whisker
+Bluebellkit
 Bluestar
 Bob
 Bone
@@ -79,10 +88,11 @@ Brackenwing
 Bramble
 Brambleberry
 Bramblestar
-Branch
+Branch (DotC)
+Branch (HJ)
 Brandy
 Braveheart
-Breezekit
+Breezepaw (RC)
 Breezepelt
 Briarlight
 Brick
@@ -94,7 +104,7 @@ Brightspirit
 Brightwhisker
 Brindleclaw
 Brindleface
-Brindlekit
+Brindlepaw (WC)
 Brindlestar
 Bristlekit
 Broken Feather
@@ -108,14 +118,16 @@ Bumblestripe
 Burr
 Buzzardkit
 Buzzardstar
+Carpkit
 Cedarheart
-Cedarpelt
+Cedarpelt (RC)
 Cedarstar
 Chasing Clouds
 Cherryfall
 Cherryfeather
-Cherrypaw
+Cherrypaw (SHA)
 Cherrytail
+Chestnutkit
 Chirp
 Chiveclaw
 Cinderfur
@@ -125,8 +137,9 @@ Cinders
 Clawface
 Cloud With Star in Belly
 Cloud With Storm in Belly
-Cloudberry
-Cloudpaw
+Cloudberry (RC)
+Cloudberry (TC)
+Cloudmist
 Cloudpelt
 Cloudrunner
 Cloudspots
@@ -134,18 +147,20 @@ Cloudstar
 Cloudtail
 Cloudy
 Cloudy Sun
-Clover
+Clover (ES)
 Cloverfoot
 Cloversplash
 Clovertail
-Coal
+Coal (FQ)
+Coal (NP)
 Cody
 Copperpaw
 Cora
 Coriander
-Cow
+Cow (MFV)
 Creekfeather
-Cricket
+Cricket (AFD)
+Cricketkit
 Crookedstar
 Crouchfoot
 Crow Muzzle
@@ -155,6 +170,8 @@ Crowfrost
 Crowfur
 Crowtail
 Curlfeather
+Curlypaw
+Cypresspaw
 Daisy
 Daisyheart
 Daisytail
@@ -165,12 +182,13 @@ Dangling Leaf
 Dapplenose
 Dapplepelt
 Dappletail
-Dappletail's Kit
 Dark Shadow on Water
 Dark Whiskers
 Darkflower
 Darkfoot
-Darkstar
+Darkstar (CotC)
+Darkstar (MV)
+Darkstar (SC)
 Darkstripe
 Darktail
 Darrel
@@ -191,8 +209,9 @@ Deerleap
 Dew
 Dew Nose
 Dew Petal
-Dewkit
+Dewkit (SC)
 Dewnose
+Dewpaw (HJ)
 Dewspots
 Dewstar
 Dewy Leaf
@@ -202,10 +221,14 @@ Doespring
 Doestar
 Domino
 Dove's Wing
-Dovestar
+Dovestar (RC)
+Dovestar (WC)
 Dovewing
+Downkit
+Dragonflykit
 Driftkit
 Drizzle
+Duckkit
 Duckpaw
 Duke
 Dusk Nose
@@ -217,15 +240,19 @@ Dustpelt
 Duststar
 Eagle Feather
 Eaglekit
+Eaglestorm
 Ebonyclaw
 Echomist
 Echosnout
 Echosong
-Eeltail
+Eeltail (CotC)
+Eeltail (MV)
 Egg
+Elderkit
 Ember
 Emberfoot
-Emberkit
+Emberkit (CJ)
+Emberkit (DotC)
 Emberstar
 Falcon Swoop
 Fall
@@ -241,6 +268,7 @@ Fallowsong
 Fallowstar
 Fallowtail
 Fawnstep
+Featherkit (TPB)
 Featherpelt
 Featherstar
 Featherstorm
@@ -251,14 +279,17 @@ Fennelstar
 Fern Leaf
 Ferncloud
 Fernleaf
-Fernpaw
+Fernpaw (TAQ)
 Fernpelt
 Fernshade
 Fernsong
 Ferretclaw
+Fidgetpaw
+Filou
 Finchflight
 Finchkit
 Finchstar
+Finpaw
 Fircone
 Firefern
 Firestar
@@ -277,26 +308,33 @@ Flight of Startled Heron
 Flintfang
 Flora
 Floss
-Flower
+Flower (DTC)
+Flower (Lo)
+Flower (Ro)
 Flower Foot
 Flower Stream
-Flowerpaw
+Flowerpaw (SC)
+Flowerpaw (TC)
 Flowerstar
 Flutter
 Fluttering Bird
 Flykit
 Flystar
-Fox
+Foggy (KP)
+Foggy (Ro)
+Fox (DTC)
 Foxclaw
 Foxheart
 Foxleap
-Foxpaw
+Foxnose
 Foxwhisker
 Foxy
-Frecklewish
+Frecklewish (SC)
+Frecklewish (TC)
 Frisk
-Fritz
-Frog
+Fritz (P3)
+Fritz (RP)
+Frog (Ro)
 Frogleap
 Frogtail
 Frost
@@ -312,32 +350,34 @@ Goldenflower
 Goldenstar
 Gooseberry
 Goosefeather
-Gorseclaw
+Gorseclaw (TC)
+Gorseclaw (WC)
 Gorsefoot
 Gorsepaw
 Gorsestar
-Gorsetail
+Gorsetail (NP)
+Gorsetail (P3)
 Grassheart
-Grasskit
+Grasskit (CP)
 Grasspelt
 Gray Sky Before Dawn
 Gray Wing
 Graymist
 Graypool
-Graypool's Kit
 Graystripe
-Graywing
+Graywing (RC)
 Greeneyes
 Greenflower
 Hailstar
 Hal
 Half Moon
 Halftail
-Hareflight
+Hareflight (FQ)
+Hareflight (TR)
 Harepounce
 Harespring
 Harley
-Harrykit
+Harrybrook
 Harveymoon
 Hatchkit
 Hattie
@@ -347,7 +387,6 @@ Hawkfoot
 Hawkfrost
 Hawkfur
 Hawkheart
-Hawkpaw
 Hawksnow
 Hawkstar
 Hawkwing
@@ -360,23 +399,25 @@ Heatherstar
 Heathertail
 Heavystep
 Henry
-Heronwing
+Heronwing (RC)
+Heronwing (TC)
 Hickorynose
+Hillkit
 Hollow Tree
 Hollowbelly
 Hollowflight
 Holly
 Hollyflower
-Hollykit
+Hollykit (NP)
 Hollyleaf
 Hollypelt
 Hollystar
 Hollytuft
 Honey Pelt
 Honeyfern
-Honeykit
 Honeyleaf
-Honeypaw
+Honeypaw (VS)
+Honeytail
 Hoot
 Hootwhisker
 Hopekit
@@ -388,9 +429,11 @@ Icecloud
 Icewhisker
 Icewing
 Icicle
+Ivy
 Ivypool
 Ivystar
-Ivytail
+Ivytail (RC)
+Ivytail (SC)
 Jackdaw's Cry
 Jacques
 Jagged Lightning
@@ -413,8 +456,8 @@ Jingo
 Jumper
 Jumpfoot
 Juniper Branch
+Juniperclaw
 Juniperkit
-Juniperpaw
 Ken
 Kestrelflight
 Kestrelwing
@@ -424,14 +467,17 @@ Lakeheart
 Lakeshine
 Lakestorm
 Lapping Wave
-Larchkit
+Larchkit (MV)
+Larchkit (NP)
 Lark That Sings at Dawn
-Larkkit
+Larkpaw (TC)
 Larksong
 Larksplash
-Larkwing
-Leaf
-Leafkit
+Larkwing (BS)
+Larkwing (FQ)
+Lavenderkit
+Leaf (DTC)
+Leafpaw (VS)
 Leafpool
 Leafshine
 Leafstar
@@ -455,13 +501,14 @@ Lilywhisker
 Lion's Roar
 Lionblaze
 Lionheart
-Lionkit
+Lionpaw (VS)
 Lionstar
 Little Mew
 Littlebird
 Littlecloud
-Littlekit
+Littlekit (YS)
 Littlestep
+Livy
 Lizardfang
 Lizardstripe
 Lizardtail
@@ -471,56 +518,66 @@ Loudbelly
 Lowbranch
 Lowbranch's Mother
 Lulu
+Luna
+Lynxkit
 Macgyver
 Madric
 Maggottail
-Magpie
+Magpie (Cat)
 Mallowfur
 Mallownose
 Mallowtail
 Mapleshade
 Maplestar
-Maplewhisker
 Marigoldkit
 Marmalade
 Marshcloud
 Marshkit
 Marshpaw
 Marshscar
+Max
 Meadowpelt
 Meadowslip
 Melting Ice
 Merry
 Micah
 Midgepelt
-Midnight
-Milkfur
+Midnight (Character)
+Milkfur (MV)
+Milkfur (RC)
+Milkfur (WC)
 Milkweed
 Millie
-Minnowkit
+Minnowkit (CotC)
+Minnowkit (CP)
 Minnowtail
-Minor Characters
-Mintfur
-Mintkit
-Mintpaw
-Minty
+# Minor Characters
+Mintfur (RC)
+Mintfur (SC)
+Mintkit (YS)
+Mintpaw (CJ)
+Minty (KP)
+Minty (Ro)
 Misha
-Mist
+Mist (Lo)
 Mist Where Sunlight Shimmers
 Mistcloud
 Mistfeather
-Mistkit
-Mistlekit
+Mistkit (TC)
+Mistlekit (CJ)
+Mistlekit (TPB)
 Mistmouse
 Mistpelt
 Misty
 Misty Water
 Mistystar
-Mitzi
-Mole
-Molepaw
+Mitzi (KP)
+Mitzi (Lo)
+Mole (Cat)
+Molepaw (NP)
 Molepelt
-Molewhisker
+Molewhisker (RC)
+Molewhisker (TC)
 Moon Shadow
 Moonflower
 Morning Fire
@@ -531,14 +588,15 @@ Morningflower
 Morningkit
 Morningmist
 Morningstar
-Moss
+Moss (KP)
 Moss Tail
 Moss that Grows by River
 Mossfire
-Mossheart
-Mosskit
+Mossheart (SC)
+Mossheart (TC)
+Mosskit (TC)
 Mossleaf
-Mosspaw
+Mosspaw (SC)
 Mosspelt
 Mossyfoot
 Mothflight
@@ -546,7 +604,7 @@ Mothpelt
 Mothwhisker
 Mothwing
 Mottlepaw
-Mouse
+Mouse (MFV)
 Mouse Ear
 Mousefang
 Mousefur
@@ -554,33 +612,40 @@ Mousewhisker
 Mousewing
 Mouthclaw
 Mud Paws
-Mudclaw
+Mudclaw (SC)
+Mudclaw (WC)
 Mudfur
 Mudpuddle
 Mudthorn
 Mumblefoot
 Myler
-Needlepaw
-Nettle
+Nami
+Needletail
+Nettle (DTC)
+Nettle (VS)
 Nettlebreeze
 Nettleclaw
 Nettlepad
-Nettlepaw
+Nettlepaw (RC)
 Nettlesplash
 Nettlespot
 Newtspeck
-Night
+Night (ES)
+Night (HJ)
 Night of No Stars
 Nightcloud
 Nightfur
 Nightheart
-Nightkit
+Nightkit (BP)
 Nightmask
+Nightpaw (RC)
 Nightsky
 Nightstar
 Nightwhisper
 Nightwing
-Nutmeg
+Nutmeg (KP)
+Nutmeg (Ro)
+Nutmeg (TR)
 Nutwhisker
 O'Hara
 Oakfur
@@ -589,11 +654,14 @@ Oakleaf
 Oakstar
 Oakstep
 Oatclaw
-Oatpaw
+Oatkit
+Oatpaw (RC)
 Oatspeckle
-Oatwhisker
+Oatwhisker (TC)
+Oatwhisker (WC)
 Oddfoot
 Olivenose
+Oliver
 One Eye
 One-eye
 Onestar
@@ -607,41 +675,45 @@ Owl Song
 Owlclaw
 Owlfur
 Owlnose
-Owlstar
+Owlstar (CotC)
+Owlstar (SotC)
 Owlwhisker
 Pack Leader
 Pad
 Palebird
 Palefoot
-Parsleypaw
+Parsleyseed
 Parsnip
 Pasha
-Patch
+Patch (KP)
+Patch (RF)
 Patchfoot
-Patchkit
+Patchkit (MV)
 Patchpelt
 Pearnose
 Pebble That Rolls Down Mountain
 Pebblefoot
 Pebblefur
 Pebbleheart
-Pebblepaw
+Pebbleshine
 Pepper
 Perchkit
-Perchpaw
+Perchpaw (MV)
 Perchwing
 Percy
-Petal
+Petal (DTC)
 Petal and Fox's Mother
 Petaldust
 Petalfall
 Petalfur
-Petalkit
+Petalkit (LC)
+Petalkit (MV)
 Petalnose
 Pigeonpaw
-Pikepaw
+Pikepaw (BotC)
+Pikepaw (MO)
 Piketooth
-Pine
+Pine (TS)
 Pine Needle
 Pine That Clings to Rock
 Pineclaw
@@ -662,46 +734,53 @@ Poppycloud
 Poppydawn
 Poppyfrost
 Pounce
-Pouncetail
+Pouncetail (RC)
+Pouncetail (SC)
 Prickleface
-Pricklekit
+Pricklekit (RC)
+Pricklekit (WC)
 Pricklenose
 Primrosepaw
 Princess
-Puddlekit
+Puddleshine
 Purdy
 Quailfeather
 Quailheart
+Quailkit
 Quick Water
 Quickpaw
 Quiet Rain
+Quietkit
 Quince
 Rabbitfur
-Rabbitkit
-Rabbitleap
+Rabbitkit (WC)
+Rabbitleap (SC)
+Rabbitleap (TC)
 Rabbitstar
 Rabbittail
 Rage
 Raggedstar
-Rain
+Rain (DoTC)
+Rain (TAQ)
 Rain That Passes Quickly
 Rain That Rattles on Stones
 Raincloud
 Raindrop
 Rainfall
 Rainflower
-Rainfur
+Rainfur (SC)
+Rainfur (TC)
 Rainleap
 Rainsplash
 Rainstorm
 Rainswept Flower
 Rainwhisker
 Ratscar
-Raven
+Raven (TAQ)
 Raven Pelt
 Ravenpaw
 Ravenwing
-Red
+Red (SD)
 Red Claw
 Redclaw
 Redscar
@@ -711,22 +790,29 @@ Redthistle
 Redwillow
 Reed Tail
 Reedfeather
-Reedshine
+Reedpaw (HJ)
+Reedshine (CotC)
+Reedshine (MV)
 Reedstar
 Reedtail
 Reedwhisker
-Reena
+Reena (KP)
+Reena (Ro)
 Riga
-Riley
-Rileypaw
+Rileypool
 Rippleclaw
 Ripplestar
-Rippletail
+Rippletail (RC)
+Rippletail (SC)
 Rising Moon
 Riverstar
+Roach
 Robinstar
-Robinwing
-Rock
+Robinwing (RC)
+Robinwing (SC)
+Robinwing (TC)
+Robinwing (WC)
+Rock (Healer)
 Rock Beneath Still Water
 Rockfall
 Rockshade
@@ -737,7 +823,9 @@ Rosepetal
 Rosetail
 Rowanberry
 Rowanfur
-Rowanstar
+Rowanstar (BS)
+Rowanstar (CotC)
+Rubblekit
 Rubblepaw
 Ruby
 Running Fox
@@ -746,62 +834,68 @@ Runningbrook
 Runningnose
 Runningstorm
 Runningwind
-Rushtail
+Rushtail (RC)
+Rushtail (WC)
 Russetfur
 Ryestalk
 Ryewhisker
-Sagepaw
+Sagenose
 Sagewhisker
 Samwise
 Sandgorse
 Sandstorm
-Sandypaw
+Sandynose
 Sasha
 Scarlet
 Scorchfur
 Scorchwind
 Scourge
-Scree
+Scree (Ro)
 Scree Beneath Winter Sky
 Screech of Angry Owl
 Sedgecreek
 Sedgestar
 Sedgewhisker
 Seedpaw
-Seedpelt
+Seedpelt (FQ)
+Seedpelt (MV)
 Seville
 Shade Pelt
 Shaded Moss
-Shadepaw
-Shadepelt
+Shadepelt (TPB)
+Shadepelt (VS)
 Shadestar
 Shadowstar
 Sharp Hail
-Sharpclaw
+Sharpclaw (SC)
 Sharptooth
 Shattered Ice
 Sheeptail
 Sheer Path Beside Waterfall
 Shellheart
-Shimmerpelt
+Shimmerpelt (BS)
+Shimmerpelt (CP)
 Shine
 Shiningheart
 Shivering Rose
 Shnuky
 Shorty
-Shredtail
+Shredtail (BS)
+Shredtail (DF)
 Shrewclaw
 Shrewfoot
-Shrewpaw
+Shrewpaw (TC)
 Shrewtooth
 Shy Fawn
 Shyheart
+Silt
 Silver Frost
 Silver Stripe
 Silverflame
 Silverhawk
 Silvermask
-Silverpaw
+Silverpaw (BotC)
+Silverpaw (TPB)
 Silverstream
 Skipper
 Skyheart
@@ -810,30 +904,34 @@ Skywatcher
 Slant
 Slash
 Slate
-Slatekit
+Slatepaw
 Slatepelt
-Sleekpaw
+Sleekwhisker
 Slightfoot
-Sloefur
+Sloefur (RC)
+Sloefur (SC)
 Smallear
 Smallstar
 Smokefoot
-Smokekit
-Smokepaw
+Smokepaw (NP)
+Smokepaw (SotC)
+Smokepaw (VS)
 Smoketalon
 Smoky
 Smudge
 Snail Shell
 Snailpaw
-Snake
-Snaketail
+Snake (DotC)
+Snakepaw
+Snaketail (FQ)
+Snaketail (P3)
 Snaketooth
 Snapper
 Sneezecloud
 Sniff
 Snipe
+Snipkit
 Snookthorn
-Snooky
 Snow Falling on Stones
 Snow Hare
 Snowbird
@@ -841,26 +939,26 @@ Snowbush
 Snowdrop
 Snowflake
 Snowfur
-Snowkit
+Snowkit (TPB)
 Snowstar
 Snowtuft
 Snowy
 Socks
 Softwing
 Sol
-Sol's Father
 Sol's Twoleg
 Songbird
 Soot
 Sootfur
-Sorrelpaw
+Sorrelpaw (WC)
 Sorrelstripe
 Sorreltail
-Sparkpaw
-Sparrow
+Sparkpelt
+Sparrow (Cat)
 Sparrow Fur
-Sparrowfeather
-Sparrowpelt
+Sparrowfeather (DF)
+Sparrowfeather (RC)
+Sparrowpelt (SC)
 Sparrowtail
 Speckle
 Specklepaw
@@ -872,7 +970,7 @@ Spiderpelt
 Spiderstar
 Spikefur
 Spiketail
-Splash
+Splash (KP)
 Splash When Fish Leaps
 Splashfoot
 Splashheart
@@ -882,58 +980,70 @@ Splashpaw
 Splinter
 Spotted Fur
 Spottedleaf
-Spottedpaw
+Spottedpaw (SC)
 Spottedpelt
 Squirrelflight
 Squirrelfur
 Squirrelwhisker
-Stagleap
+Stagleap (GC)
+Stagleap (TR)
 Star Flower
 Star That Shines On Water
 Starlingfeather
 Starlingwing
-Stick
-Stoatfur
-Stone
-Stone Song
+Stick (Cat)
+Stoatfur (BS)
+Stoatfur (CJ)
+Stone (DotC)
+Stone (HJ)
+Stone Song (DTC)
+Stone Song (P3)
 Stoneclaw
 Stonefur
 Stonepelt
 Stonestar
 Stonestream
-Stonetooth
+Stonetooth (BP)
 Stonewing
-Storm
+Storkkit
+Storm (Ro)
 Storm Clouds at Dusk
 Storm Pelt
 Stormcloud
 Stormfur
-Stormkit
+Stormheart
 Stormtail
-Strikepaw
+Strikestone
 Stripes
 Strong Pounce
 Stumpytail
 Sun Shadow
 Sunfish
+Sunny
 Sunnytail
-Sunpelt
+Sunpelt (LC)
+Sunpelt (SC)
 Sunspots
 Sunstar
 Sunstrike
 Susan
+Suzy
 Swallow
 Swallowflight
-Swallowtail
+Swallowtail (RC)
+Swallowtail (WC)
+Swampkit
+Swankit
 Sweetbriar
 Sweetpaw
-Swift
+Swift (DTC)
 Swift Minnow
 Swiftbreeze
 Swiftflight
 Swiftfoot
-Swiftpaw
-Swiftstar
+Swiftpaw (TPB)
+Swiftstar (LC)
+Swiftstar (WC)
 Swoop of Chestnut Hawk
 Tadpole
 Tallpoppy
@@ -944,14 +1054,16 @@ Talonstar
 Tangle
 Tangleburr
 Tanglefur
-Tanglepaw
+Tanglepaw (RC)
 Tanglewhisker
-Tansy
+Tansy (Cat)
 Tansypaw
 Tawnyfur
 Tawnypelt
 Tawnyspots
-Teller of the Pointed Stones
+Taylor
+Teller of the Pointed Stones (NP)
+Teller of the Pointed Stones (OTS)
 Tess
 The Captain
 The Old She-cat
@@ -959,12 +1071,14 @@ The Stranger
 Thistle
 Thistleclaw
 Thistleheart
-Thistlepaw
+Thistlepaw (CotC)
+Thistlepaw (NP)
 Thistletail
 Thorn
 Thornclaw
 Thorntooth
-Thrushpelt
+Thrushpelt (TC)
+Thrushpelt (WC)
 Thrushtalon
 Thrushwing
 Thunderstar
@@ -973,18 +1087,23 @@ Tigerstar
 Timberfur
 Tiny Branch
 Tinycloud
+Toad (HJ)
 Toadfoot
 Toadskip
 Toadstep
-Tom
+Tom (ES)
+Tommy
 Tornear
+Tree
 Troutclaw
 Troutstar
 Troutstream
+Tulipkit
 Tumblekit
 Turtle Tail
+Turtlekit
 Twig
-Twigkit
+Twigpaw
 Twigtail
 Twist
 Twisted Branch
@@ -992,16 +1111,18 @@ Velvet
 Victor
 Vinestar
 Vinetail
-Violet
+Violet (KP)
 Violet Dawn
-Violetkit
+Violetpaw
 Vixenkit
 Voleclaw
-Volepaw
+Volepaw (SC)
 Volestar
 Voletooth
 Wasptail
 Waspwhisker
+Waterkit
+Wavepaw
 Weaselfur
 Weaselkit
 Weaselwhisker
@@ -1012,6 +1133,7 @@ Wee Hen
 Weedwhisker
 Wetfoot
 Whiskernose
+Whisper
 Whispering Breeze
 White Tail
 Whiteberry
@@ -1019,18 +1141,21 @@ Whiteclaw
 Whitefang
 Whitestar
 Whitestorm
-Whitetail
+Whitetail (SC)
+Whitetail (TUG)
+Whitetail (WC)
 Whitethroat
 Whitewater
 Whitewhisker
 Whitewing
+Whorlpaw
 Wildfur
-Wildkit
+Wildkit (RC)
 Willie
 Willow Tail
 Willowbreeze
 Willowclaw
-Willowkit
+Willowkit (CP)
 Willownose
 Willowpelt
 Willowshine
@@ -1044,8 +1169,9 @@ Wolfstep
 Woody
 Woollytail
 Wrenflight
-Yarrowpaw
+Yarrowleaf
 Yellowfang
 Yellowstar
 Yew Tail
+Zack
 Ziggy
