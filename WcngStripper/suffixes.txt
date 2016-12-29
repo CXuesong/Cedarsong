@@ -95,7 +95,4 @@ whisper
 willow
 wind
 wing
-yfoot
-ynose
 ypaw
-ystar

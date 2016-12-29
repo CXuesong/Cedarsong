@@ -154,10 +154,12 @@ Meadow
 Midge
 Minnow
 Mist
+Misty
 Mole
 Moon
 Morning
 Moss
+Mossy
 Moth
 Mottle
 Mouse
@@ -216,6 +218,7 @@ Russet
 Rye
 Sage
 Sand
+Sandy
 Scorch
 Sedge
 Seed

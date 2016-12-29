@@ -10,6 +10,13 @@ Dark-
 Long-
 Short-
 
+# These words have their noun counterparts, and will cause
+# incorrrect name divisions.
+Misty-
+Mossy-
+Sandy-
+Curly-
+
 # Suffixes
 -kit
 -paw
