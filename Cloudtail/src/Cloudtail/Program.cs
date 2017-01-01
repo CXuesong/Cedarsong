@@ -52,6 +52,15 @@ namespace Cloudtail
                             hasSwitch("L"), hasSwitch("C")).Wait();
                     }
                         break;
+                    case "publications":
+                        {
+                            var routine = new GatherPublications(siteProvider);
+                            if (args.Length > 1 && args[1] == "export")
+                                routine.ExportModulesAsync().Wait();
+                            else
+                                routine.FetchAsync().Wait();
+                        }
+                        break;
                     default:
                         Console.WriteLine("Unknown action: {0}.", args[0]);
                         return 1;

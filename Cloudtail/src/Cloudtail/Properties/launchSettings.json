@@ -2,7 +2,7 @@
   "profiles": {
     "Cloudtail": {
       "commandName": "Project",
-      "commandLineArgs": "purge test"
+      "commandLineArgs": "publications export"
     }
   }
 }
