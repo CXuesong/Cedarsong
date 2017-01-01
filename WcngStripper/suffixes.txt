@@ -17,10 +17,9 @@ dawn
 drop
 dusk
 dust
-e
 ear
-es
 eye
+eyes
 face
 fall
 fang

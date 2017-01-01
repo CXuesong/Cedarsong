@@ -230,6 +230,7 @@ Russet
 Rye
 Sage
 Sand
+Sandy
 Scorch
 Sedge
 Seed

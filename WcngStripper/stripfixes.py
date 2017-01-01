@@ -54,11 +54,12 @@ for rounds in range(10):
                 break
         if fix != None:
             # The rest is suffix
-            if l[len(fix)] == "y":  # The prefix ends with y,
+            if len(l) - len(fix) > 3 and l[len(fix)] == "y":  # The prefix ends with y,
                 fix += "y"          # counts y in.
-            elif l[len(fix) + 1] == "y":
+            elif len(l) - len(fix) > 4 and l[len(fix) + 1] == "y":
                 fix += l[len(fix)] + "y"
             suffix = l[len(fix):]
+            assert suffix != "e"
             if not suffix in suffixes and isValidFix(suffix):
                 suffixes.add(suffix)
                 anyNewFixes = True
