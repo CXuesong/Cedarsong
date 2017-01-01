@@ -10,21 +10,21 @@ Dark-
 Long-
 Short-
 
-# These words have their noun counterparts, and will cause
-# incorrrect name divisions.
-Misty-
-Mossy-
-Sandy-
-Curly-
+Bee-
+Beech-
+Beetle-
 
 # Suffixes
--kit
--paw
--star
+#Specified in WELL_KNOWN_SUFFIXES in stripfixes.py
+#-kit
+#-paw
+#-star
+
 -heart
 -pelt
 -nose
 -ear
+-eye
 -tail
 -leg
 -fur
@@ -33,3 +33,6 @@ Curly-
 
 -light
 -flight
+-seed
+-speck
+-wish
