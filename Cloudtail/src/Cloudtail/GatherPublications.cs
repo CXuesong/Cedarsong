@@ -14,7 +14,7 @@ namespace Cloudtail
     public class GatherPublications
     {
 
-        private static string[] Volumes =
+        private static readonly string[] Volumes =
         {
             "@Dawn of the Clans",
             "The Sun Trail",
@@ -113,6 +113,7 @@ namespace Cloudtail
 
         public GatherPublications(SiteProvider siteProvider)
         {
+            if (siteProvider == null) throw new ArgumentNullException(nameof(siteProvider));
             SiteProvider = siteProvider;
         }
 

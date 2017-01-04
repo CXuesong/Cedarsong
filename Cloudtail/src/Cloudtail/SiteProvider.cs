@@ -24,8 +24,8 @@ namespace Cloudtail
         {
             CookiesFileName = cookiesFileName;
             _WikiClient = new Lazy<WikiClient>(WikiClientFactory);
-            _EnSite = new Lazy<Site>(() => CreateSite(EnApiEntryPoint));
-            _ZhSite = new Lazy<Site>(() => CreateSite(ZhApiEntryPoint));
+            _EnSite = new Lazy<Site>(() => CreateSite(EnApiEntryPoint, "EnSite"));
+            _ZhSite = new Lazy<Site>(() => CreateSite(ZhApiEntryPoint, "ZhSite"));
         }
 
         public SiteProvider() : this(null)
@@ -41,7 +41,8 @@ namespace Cloudtail
 
         private WikiClient WikiClientFactory()
         {
-            var client = new WikiClient {ClientUserAgent = "Cloudtail/1.0 (.NET Core; Cedarsong)"};
+            var client = new WikiClient { ClientUserAgent = "Cloudtail/1.0 (.NET Core; Cedarsong)" };
+            client.Logger = new TraceLogger("Client");
             if (File.Exists(CookiesFileName))
             {
                 using (var reader = File.OpenText(CookiesFileName))
@@ -82,9 +83,10 @@ namespace Cloudtail
 
         private readonly Lazy<Site> _EnSite, _ZhSite;
 
-        private Site CreateSite(string entryPoint)
+        private Site CreateSite(string entryPoint, string name)
         {
             var site = Site.CreateAsync(WikiClient, entryPoint).Result;
+            site.Logger = new TraceLogger(name);
             UI.Print("{0}@{1}", site.UserInfo.Name, site.SiteInfo.SiteName);
             return site;
         }
@@ -97,7 +99,7 @@ namespace Cloudtail
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (site.UserInfo.IsUser) return;
-            UI.Print("Login to {0}。", (object) site.SiteInfo.SiteName);
+            UI.Print("Login to {0}。", (object)site.SiteInfo.SiteName);
             TRIAL:
             var userName = UI.Input("User name");
             var password = UI.InputPassword("Password");
@@ -116,6 +118,40 @@ namespace Cloudtail
         }
 
         #endregion
+
+        private class TraceLogger : ILogger
+        {
+            public TraceLogger(string sourceName)
+            {
+                SourceName = sourceName;
+            }
+
+            public string SourceName { get; }
+
+            /// <inheritdoc />
+            public void Trace(string message)
+            {
+                Logger.Wcl.Trace(SourceName, "{0}", message);
+            }
+
+            /// <inheritdoc />
+            public void Info(string message)
+            {
+                Logger.Wcl.Info(SourceName, "{0}", message);
+            }
+
+            /// <inheritdoc />
+            public void Warn(string message)
+            {
+                Logger.Wcl.Warn(SourceName, "{0}", message);
+            }
+
+            /// <inheritdoc />
+            public void Error(Exception exception, string message)
+            {
+                Logger.Wcl.Exception(SourceName, exception);
+            }
+        }
 
     }
 }

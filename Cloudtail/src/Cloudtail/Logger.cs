@@ -12,6 +12,8 @@ namespace Cloudtail
     {
         public static readonly Logger Cloudtail = new Logger("Cloudtail");
 
+        public static readonly Logger Wcl = new Logger("WCL");
+
         private readonly TraceSource source;
 
         public Logger(string name)

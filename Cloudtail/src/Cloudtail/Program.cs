@@ -21,6 +21,8 @@ namespace Cloudtail
             Console.OutputEncoding = Encoding.Unicode;
             Logger.Cloudtail.Listeners.Add(ConsoleTraceListener.Default);
             Logger.Cloudtail.Switch.Level = SourceLevels.All;
+            Logger.Wcl.Listeners.Add(ConsoleTraceListener.Default);
+            Logger.Wcl.Switch.Level = SourceLevels.All;
             Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), WorkDir));
             Logger.Cloudtail.Info(null, "Work path = {0}", Directory.GetCurrentDirectory());
             ////
@@ -40,17 +42,17 @@ namespace Cloudtail
                         siteProvider.SaveSession();
                         break;
                     case "sync":
-                    {
-                        var duty = new Routine(siteProvider);
-                        duty.PerformAsync().Wait();
-                    }
+                        {
+                            var duty = new Routine(siteProvider);
+                            duty.PerformAsync().Wait();
+                        }
                         break;
                     case "purge":
-                    {
-                        var routine = new PurgeRoutine(siteProvider);
-                        routine.PurgeZhAsync(args.Skip(1).Where(s => !s.StartsWith("/")),
-                            hasSwitch("L"), hasSwitch("C")).Wait();
-                    }
+                        {
+                            var routine = new PurgeRoutine(siteProvider);
+                            routine.PurgeZhAsync(args.Skip(1).Where(s => !s.StartsWith("/")),
+                                hasSwitch("L"), hasSwitch("C")).Wait();
+                        }
                         break;
                     case "publications":
                         {
@@ -59,6 +61,12 @@ namespace Cloudtail
                                 routine.ExportModulesAsync().Wait();
                             else
                                 routine.FetchAsync().Wait();
+                        }
+                        break;
+                    case "interwikis":
+                        {
+                            var routine = new InterwikiCounter(siteProvider);
+                            routine.PerformAsync().Wait();
                         }
                         break;
                     default:

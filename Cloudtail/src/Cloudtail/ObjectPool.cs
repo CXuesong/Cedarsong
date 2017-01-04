@@ -9,7 +9,7 @@ namespace Cloudtail
     public class ObjectPool<T>
     {
         private readonly Func<T> factoryFunc;
-        private int _Capacity;
+        private int _Capacity = 5;
 
         private readonly Stack<T> pool = new Stack<T>();
 
