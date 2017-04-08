@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Snowbush": {
+      "commandName": "Project",
+      "commandLineArgs": "UpgradeInfobox"
+    }
+  }
+}
