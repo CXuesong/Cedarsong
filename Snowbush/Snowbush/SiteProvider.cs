@@ -18,9 +18,9 @@ namespace Snowbush
 
         public Family WikiFamily { get; }
 
-        private Serilog.ILogger logger;
+        private readonly Serilog.ILogger logger;
 
-        private SerilogWclLogger wclLogger;
+        private readonly SerilogWclLogger wclLogger;
 
         private static readonly JsonSerializer cookieSerializer = new JsonSerializer
         {
@@ -29,10 +29,11 @@ namespace Snowbush
 
         public SiteProvider(string cookiesFileName, Serilog.ILogger logger)
         {
-            logger = logger.ForContext<SiteProvider>();
+            this.logger = logger.ForContext<SiteProvider>();
             wclLogger = new SerilogWclLogger(logger);
             CookiesFileName = cookiesFileName;
             WikiClient = WikiClientFactory();
+            WikiFamily = WikiFamilyFactory();
         }
 
         #region Infrastructures
@@ -61,14 +62,19 @@ namespace Snowbush
             return client;
         }
 
+        private readonly object saveSessionLock = new object();
+
         public void SaveSession()
         {
-            using (var writer = File.CreateText(CookiesFileName))
-            using (var jwriter = new JsonTextWriter(writer))
+            lock (saveSessionLock)
             {
-                cookieSerializer.Serialize(jwriter, WikiClient.CookieContainer.EnumAllCookies().ToList());
+                using (var writer = File.CreateText(CookiesFileName))
+                using (var jwriter = new JsonTextWriter(writer))
+                {
+                    cookieSerializer.Serialize(jwriter, WikiClient.CookieContainer.EnumAllCookies().ToList());
+                }
+                logger.Information("Session saved.");
             }
-            logger.Information("Session saved.");
         }
 
         public static async Task LoginAsync(Site site)
@@ -90,16 +96,20 @@ namespace Snowbush
             }
         }
 
-        public Task<Site> GetSite(string prefix)
+        public Task<Site> GetSiteAsync(string prefix)
         {
-            return GetSite(prefix, false);
+            return GetSiteAsync(prefix, false);
         }
 
-        public async Task<Site> GetSite(string prefix, bool ensureLoggedIn)
+        public async Task<Site> GetSiteAsync(string prefix, bool ensureLoggedIn)
         {
             if (prefix == null) throw new ArgumentNullException(nameof(prefix));
             var site = await WikiFamily.GetSiteAsync(prefix);
-            if (ensureLoggedIn && !site.AccountInfo.IsUser) await LoginAsync(site);
+            if (ensureLoggedIn && !site.AccountInfo.IsUser)
+            {
+                await LoginAsync(site);
+                SaveSession();
+            }
             return site;
         }
 
@@ -107,9 +117,10 @@ namespace Snowbush
 
         #region Site Specific
 
-        private Family WikiFamilyFactory(WikiClient client)
+        private Family WikiFamilyFactory()
         {
             var f = new MyFamily(this, "Warriors");
+            f.Logger = wclLogger;
             f.Register("en", "http://warriors.wikia.com/api.php");
             f.Register("zh", "http://warriors.huiji.wiki/api.php");
             return f;

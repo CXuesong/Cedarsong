@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
+using System.Text;
 using Autofac;
 using Serilog;
 using Snowbush.CommandLine;
@@ -14,6 +14,7 @@ namespace Snowbush
     {
         static void Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
             using (var container = BuildContainer())
             {
                 var arguments = container.Resolve<ProgramCommandLineArguments>();
@@ -44,7 +45,9 @@ namespace Snowbush
                 })
                 .SingleInstance();
 
-            builder.Register<ILogger>(context => new LoggerConfiguration().WriteTo.LiterateConsole().CreateLogger())
+            builder.Register<ILogger>(context => new LoggerConfiguration().WriteTo
+                    .LiterateConsole(outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {SourceContext} {Message}{NewLine}{Exception}")
+                    .CreateLogger())
                 .SingleInstance();
 
             builder.Register(context => new SiteProvider(context.Resolve<ProgramCommandLineArguments>().CookiesFileName,

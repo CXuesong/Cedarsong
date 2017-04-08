@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="work\**" />
+    <EmbeddedResource Remove="work\**" />
+    <None Remove="work\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac" Version="4.5.0" />
     <PackageReference Include="CXuesong.MW.MwParserFromScratch" Version="0.1.0-int1" />
     <PackageReference Include="CXuesong.MW.WikiClientLibrary" Version="0.5.0-int2a" />
