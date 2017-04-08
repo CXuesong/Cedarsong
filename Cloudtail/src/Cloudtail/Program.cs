@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Generators;
 using WikiDiffSummary;
 
 namespace Cloudtail
@@ -18,7 +19,7 @@ namespace Cloudtail
 
         public static int Main(string[] args)
         {
-            Console.OutputEncoding = Encoding.Unicode;
+            Console.OutputEncoding = Encoding.UTF8;
             Logger.Cloudtail.Listeners.Add(ConsoleTraceListener.Default);
             Logger.Cloudtail.Switch.Level = SourceLevels.All;
             Logger.Wcl.Listeners.Add(ConsoleTraceListener.Default);

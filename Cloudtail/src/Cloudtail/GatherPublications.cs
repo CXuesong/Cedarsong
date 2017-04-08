@@ -66,7 +66,7 @@ namespace Cloudtail
             "Bramblestar's Storm",
             "Moth Flight's Vision",
             "Hawkwing's Journey",
-            "Super Edition 10",
+            "Tigerheart's Shadow",
             "@The Untold Stories",
             "Hollyleaf's Story",
             "Mistystar's Omen",
@@ -208,15 +208,44 @@ namespace Cloudtail
             SavePublicationList(pubList);
         }
 
+        private static readonly Regex TranslatorMatcher = new Regex(@"translated by\s*(.+?)(,|$)");
+
+        private static readonly Regex NarratorMatcher = new Regex(@"narrated by\s*(.+?)(,|$)");
+
         public async Task ExportModulesAsync()
         {
             await Task.Yield();
             var pubList = LoadPublicationList().ToLookup(p => p.Locale);
+            var site = SiteProvider.ZhSite;
             foreach (var lang in pubList)
             {
+                if (lang.Key == "en") continue;
                 var isFirst = true;
-                using (var sw = File.CreateText("publication-" + lang.Key + ".txt"))
+                //using (var sw = File.CreateText("publication-" + lang.Key + ".txt"))
+                using (var sw = new StringWriter())
                 {
+                    Action<string, string, bool> AddProperty = (name, value, optional) =>
+                    {
+                        if (optional && string.IsNullOrEmpty(value)) return;
+                        sw.Write(new string(' ', 12));
+                        sw.Write(string.Format("{0, -12}", name));
+                        sw.Write("= ");
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            sw.Write("nil");
+                        }
+                        else
+                        {
+                            sw.Write('"');
+                            sw.Write(value.Replace("\\", "\\\\").Replace("\"", ""));
+                            sw.Write('"');
+                        }
+                        sw.WriteLine(",");
+                    };
+                    var culture = new CultureInfo(lang.Key);
+                    sw.WriteLine("-- Publication information for " + culture.EnglishName + " [" + culture.NativeName + "].");
+                    sw.WriteLine();
+                    sw.WriteLine("local data = {");
                     foreach (var vol in Volumes)
                     {
                         if (vol.StartsWith("@"))
@@ -230,28 +259,41 @@ namespace Cloudtail
                         var pubs = lang.Where(e => e.Title == vol).ToList();
                         if (pubs.Any())
                         {
-                            sw.WriteLine("        Publication = {");
                             foreach (var pub in pubs)
                             {
-                                if (Regex.IsMatch(pub.PublishDate, @"^\d+$")) pub.PublishDate += "-00-00";
-                                else if (Regex.IsMatch(pub.PublishDate, @"^\d+-\d+$")) pub.PublishDate += "-00";
                                 if (pub.MediaType?.Contains("unknow") == true) pub.MediaType = null;
-                                sw.Write("            {");
-                                sw.Write(string.Join(", ", new[]
+                                string translator = null, narrator = null;
+                                if (!string.IsNullOrWhiteSpace(pub.Note))
                                 {
-                                    pub.LocalizedTitle, pub.PublishDate, pub.MediaType,
-                                    pub.Publisher, pub.Note, pub.Cite
-                                }.Select(f =>
-                                {
-                                    if (string.IsNullOrWhiteSpace(f)) return "nil";
-                                    return "\"" + f.Replace("\"", "\\\"") + "\"";
-                                })));
-                                sw.WriteLine("},");
+                                    translator = TranslatorMatcher.Match(pub.Note).Groups[1].Value;
+                                    narrator = NarratorMatcher.Match(pub.Note).Groups[1].Value;
+                                    if (string.IsNullOrEmpty(translator) && string.IsNullOrEmpty(narrator))
+                                    {
+                                        Logger.Cloudtail.Warn(pub.LocalizedTitle, "Cannot parse: {0}", pub.Note);
+                                    }
+                                }
+                                sw.WriteLine("        {");
+                                AddProperty("title", pub.LocalizedTitle, false);
+                                AddProperty("pubDate", pub.PublishDate, false);
+                                AddProperty("publisher", pub.Publisher, false);
+                                AddProperty("mediaType", pub.MediaType.ToLower(), false);
+                                AddProperty("translator", translator, true);
+                                AddProperty("narrator", narrator, true);
+                                AddProperty("illustrator", null, false);
+                                AddProperty("isbn", null, false);
+                                AddProperty("ref", pub.Cite, false);
+                                sw.WriteLine("        },");
                             }
-                            sw.WriteLine("        }");
                         }
                         sw.WriteLine("    },");
                     }
+                    sw.WriteLine("}");
+                    sw.WriteLine();
+                    sw.WriteLine("return data");
+                    var page = new Page(site, "Module:Publication/data/" + lang.Key);
+                    page.Content = sw.ToString();
+                    Logger.Cloudtail.Info(this, "Writting {0}", culture);
+                    await page.UpdateContentAsync("机器人：从[[:en:]]导入出版信息（" + culture.DisplayName + "）。");
                 }
             }
         }
