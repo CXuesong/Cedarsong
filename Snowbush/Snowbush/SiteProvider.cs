@@ -42,7 +42,11 @@ namespace Snowbush
 
         private WikiClient WikiClientFactory()
         {
-            var client = new WikiClient { ClientUserAgent = "Snowbush/1.0 (.NET Core; Cedarsong)" };
+            var client = new WikiClient
+            {
+                ClientUserAgent = "Snowbush/1.0 (.NET Core; Cedarsong)",
+                ThrottleTime = TimeSpan.FromSeconds(2)
+            };
             client.Logger = wclLogger;
             if (File.Exists(CookiesFileName))
             {
