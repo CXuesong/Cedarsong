@@ -24,18 +24,17 @@ namespace Snowbush.Routines
     //  {{Locale|cn|Value-CN}}{{Locale|tw|Value-TW}}
     // Remove orig_title argument.
     // Update name argument so that it contains locale-aware values.
-    public class UpgradeInfoboxRoutine : IRoutine
+    public class UpgradeGeneralInfoboxRoutine : IRoutine
     {
         private readonly SiteProvider siteProvider;
         private readonly ILogger logger;
 
-        public UpgradeInfoboxRoutine(ILogger logger, SiteProvider siteProvider)
+        public UpgradeGeneralInfoboxRoutine(ILogger logger, SiteProvider siteProvider)
         {
             this.siteProvider = siteProvider;
-            this.logger = logger.ForContext<UpgradeInfoboxRoutine>();
+            this.logger = logger.ForContext<UpgradeGeneralInfoboxRoutine>();
         }
 
-        /// <param name="arguments"></param>
         /// <inheritdoc />
         public async Task PerformAsync(IList<(string Key, string Value)> arguments)
         {
