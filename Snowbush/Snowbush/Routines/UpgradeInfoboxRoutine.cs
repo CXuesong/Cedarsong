@@ -39,7 +39,9 @@ namespace Snowbush.Routines
         public async Task PerformAsync()
         {
             var zhSite = await siteProvider.GetSiteAsync("zh", true);
-            var gen = new CategoryMembersGenerator(zhSite, "猫武士分卷")
+            //var gen = new CategoryMembersGenerator(zhSite, "猫武士分卷")
+            //var gen = new CategoryMembersGenerator(zhSite, "猫武士故事")
+            var gen = new CategoryMembersGenerator(zhSite, "猫武士短文")
             {
                 MemberTypes = CategoryMemberTypes.Page,
                 PagingSize = 10
@@ -47,7 +49,7 @@ namespace Snowbush.Routines
             var sourceBlock = gen.EnumPagesAsync(PageQueryOptions.FetchContent).ToObservable().ToSourceBlock();
             var processorBlock = new ActionBlock<Page>(UpgradeVolumeIB,
                 new ExecutionDataflowBlockOptions {MaxDegreeOfParallelism = 2});
-            using (sourceBlock.LinkTo(processorBlock, new DataflowLinkOptions { PropagateCompletion = true }))
+            using (sourceBlock.LinkTo(processorBlock, new DataflowLinkOptions {PropagateCompletion = true}))
             {
                 await processorBlock.Completion;
             }
@@ -60,7 +62,7 @@ namespace Snowbush.Routines
             var root = parser.Parse(page.Content);
             var ib = root.EnumDescendants()
                 .OfType<Template>()
-                .First(t => MwParserUtility.NormalizeTitle(t.Name) == "Infobox volume");
+                .First(t => MwParserUtility.NormalizeTitle(t.Name).StartsWith("Infobox "));
             ib.Arguments["orig_title"]?.Remove();
             var nameArgument = ib.Arguments["name"];
             //if (nameArgument.EnumDescendants()
@@ -130,10 +132,17 @@ namespace Snowbush.Routines
                 if (m.Groups[4].Value == "\n") s += "\n";
                 return m.Groups[1].Value + s;
             }, RegexOptions.IgnoreCase);
-            Utility.ShowDiff(page.Content, newText);
-            page.Content = newText;
-            await page.UpdateContentAsync("机器人：使用{{Locale}}模板。", true, true);
-            logger.Information("Saved: {title}", page.Title);
+            if (page.Content != newText)
+            {
+                Utility.ShowDiff(page.Content, newText);
+                page.Content = newText;
+                await page.UpdateContentAsync("机器人：使用{{Locale}}模板。", true, true);
+                logger.Information("Saved: {title}", page.Title);
+            }
+            else
+            {
+                logger.Information("Nothing changed: {title}", page.Title);
+            }
         }
     }
 }

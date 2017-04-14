@@ -2,7 +2,7 @@
   "profiles": {
     "Snowbush": {
       "commandName": "Project",
-      "commandLineArgs": "UpgradeInfobox"
+      "commandLineArgs": "ReplaceText"
     }
   }
 }
