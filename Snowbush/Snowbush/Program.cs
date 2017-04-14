@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using Autofac;
 using Serilog;
+using Serilog.Events;
 using Snowbush.CommandLine;
 
 namespace Snowbush
@@ -24,7 +25,7 @@ namespace Snowbush
                 {
                     var routineType = routineManager.Resolve(arguments.RoutineName);
                     var routine = container.ResolveKeyed<IRoutine>(routineType);
-                    routine.PerformAsync().GetAwaiter().GetResult();
+                    routine.PerformAsync(arguments.RoutineArguments).GetAwaiter().GetResult();
                 }
                 else
                 {
@@ -46,7 +47,8 @@ namespace Snowbush
                 .SingleInstance();
 
             builder.Register<ILogger>(context => new LoggerConfiguration().WriteTo
-                    .LiterateConsole(outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {SourceContext} {Message}{NewLine}{Exception}")
+                    .LiterateConsole(restrictedToMinimumLevel: LogEventLevel.Debug,
+                        outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {SourceContext} {Message}{NewLine}{Exception}")
                     .CreateLogger())
                 .SingleInstance();
 

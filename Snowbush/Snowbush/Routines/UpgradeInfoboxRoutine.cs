@@ -35,8 +35,9 @@ namespace Snowbush.Routines
             this.logger = logger.ForContext<UpgradeInfoboxRoutine>();
         }
 
+        /// <param name="arguments"></param>
         /// <inheritdoc />
-        public async Task PerformAsync()
+        public async Task PerformAsync(IList<(string Key, string Value)> arguments)
         {
             var zhSite = await siteProvider.GetSiteAsync("zh", true);
             //var gen = new CategoryMembersGenerator(zhSite, "猫武士分卷")

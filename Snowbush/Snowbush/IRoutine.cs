@@ -7,6 +7,6 @@ namespace Snowbush
 {
     public interface IRoutine
     {
-        Task PerformAsync();
+        Task PerformAsync(IList<(string Key, string Value)> arguments);
     }
 }
