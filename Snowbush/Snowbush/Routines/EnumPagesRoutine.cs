@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Serilog;
+using Snowbush.CommandLine;
 using WikiClientLibrary.Generators;
 
 namespace Snowbush.Routines
@@ -25,13 +26,14 @@ namespace Snowbush.Routines
 
         /// <param name="arguments"></param>
         /// <inheritdoc />
-        public async Task PerformAsync(IList<(string Key, string Value)> arguments)
+        public async Task PerformAsync(CommandArguments arguments)
         {
-            var outputPath = arguments[0].Value;
+            var outputPath = (string) arguments[0];
+            if (outputPath == null) throw new ArgumentNullException(nameof(outputPath));
             var zhSite = await siteProvider.GetSiteAsync("zh");
             using (var sw = File.CreateText(outputPath))
             {
-                var generator = new AllPagesGenerator(zhSite) {PagingSize = 50};
+                var generator = new AllPagesGenerator(zhSite) {PagingSize = 100};
                 foreach (var ns in zhSite.Namespaces)
                 {
                     if (ns.Id < 0) continue;

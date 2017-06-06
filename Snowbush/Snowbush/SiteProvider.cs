@@ -45,7 +45,9 @@ namespace Snowbush
             var client = new WikiClient
             {
                 ClientUserAgent = "Snowbush/1.0 (.NET Core; Cedarsong)",
-                ThrottleTime = TimeSpan.FromSeconds(2)
+                ThrottleTime = TimeSpan.FromSeconds(2),
+                Timeout = TimeSpan.FromSeconds(30),
+                RetryDelay = TimeSpan.FromSeconds(10)
             };
             client.Logger = wclLogger;
             if (File.Exists(CookiesFileName))

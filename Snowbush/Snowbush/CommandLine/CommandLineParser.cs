@@ -9,11 +9,14 @@ namespace Snowbush.CommandLine
     {
         private static readonly Regex NamedArgMatcher = new Regex(@"^-(?<N>[^\s:]+)(:""?(?<V>[^""]*)""?)?$");
 
-        public static (string Key, string Value) ParseArgument(string expr)
+        public static CommandArgument ParseArgument(string expr)
         {
             var match = NamedArgMatcher.Match(expr);
-            if (match.Success) return (match.Groups["N"].Value, match.Groups["V"].Value);
-            return (null, expr);
+            if (match.Success)
+            {
+                return new CommandArgument(match.Groups["N"].Value, match.Groups["V"].Value);
+            }
+            return new CommandArgument(null, expr);
         }
     }
 }

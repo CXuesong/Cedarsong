@@ -113,20 +113,21 @@ namespace Snowbush
 
         public string CookiesFileName { get; set; } = "cookies.json";
 
-        public IList<(string Key, string Value)> RoutineArguments { get; set; }
+        public CommandArguments RoutineArguments { get; set; }
 
         public void ParseFrom(IEnumerable<string> arguments)
         {
             var parsingRoutineArguments = false;
+            var routineArgs = new List<CommandArgument>();
             foreach (var sarg in arguments)
             {
                 var arg = CommandLineParser.ParseArgument(sarg);
                 if (parsingRoutineArguments)
                 {
-                    RoutineArguments.Add(arg);
+                    routineArgs.Add(arg);
                     continue;
                 }
-                switch (arg.Key?.ToUpperInvariant())
+                switch (arg.Name?.ToUpperInvariant())
                 {
                     case "COOKIESFILE":
                         CookiesFileName = arg.Value;
@@ -136,11 +137,11 @@ namespace Snowbush
                         break;
                     case null:
                         RoutineName = arg.Value;
-                        RoutineArguments = new List<(string Key, string Value)>();
                         parsingRoutineArguments = true;
                         break;
                 }
             }
+            RoutineArguments = new CommandArguments(routineArgs);
         }
     }
 }

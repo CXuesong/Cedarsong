@@ -11,6 +11,7 @@ using Microsoft.VisualBasic.CompilerServices;
 using MwParserFromScratch;
 using MwParserFromScratch.Nodes;
 using Serilog.Core;
+using Snowbush.CommandLine;
 using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using ILogger = Serilog.ILogger;
@@ -37,7 +38,7 @@ namespace Snowbush.Routines
         }
 
         /// <inheritdoc />
-        public async Task PerformAsync(IList<(string Key, string Value)> arguments)
+        public async Task PerformAsync(CommandArguments arguments)
         {
             var zhSite = await siteProvider.GetSiteAsync("zh", true);
             //var gen = new CategoryMembersGenerator(zhSite, "猫武士分卷")
