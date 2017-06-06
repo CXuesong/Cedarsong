@@ -11,8 +11,10 @@ using Snowbush.CommandLine;
 
 namespace Snowbush
 {
-    class Program
+    static class Program
     {
+        private static TextWriter logWriter;
+
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
@@ -21,15 +23,18 @@ namespace Snowbush
                 var arguments = container.Resolve<ProgramCommandLineArguments>();
                 var routineManager = container.Resolve<RoutineManager>();
                 Directory.SetCurrentDirectory(Path.Combine(Directory.GetCurrentDirectory(), arguments.WorkPath));
-                if (arguments.RoutineName != null)
+                using (logWriter = File.CreateText("Snowbush-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".log"))
                 {
-                    var routineType = routineManager.Resolve(arguments.RoutineName);
-                    var routine = container.ResolveKeyed<IRoutine>(routineType);
-                    routine.PerformAsync(arguments.RoutineArguments).GetAwaiter().GetResult();
-                }
-                else
-                {
-                    PrintHelp(routineManager);
+                    if (arguments.RoutineName != null)
+                    {
+                        var routineType = routineManager.Resolve(arguments.RoutineName);
+                        var routine = container.ResolveKeyed<IRoutine>(routineType);
+                        routine.PerformAsync(arguments.RoutineArguments).GetAwaiter().GetResult();
+                    }
+                    else
+                    {
+                        PrintHelp(routineManager);
+                    }
                 }
             }
         }
@@ -46,9 +51,11 @@ namespace Snowbush
                 })
                 .SingleInstance();
 
-            builder.Register<ILogger>(context => new LoggerConfiguration().WriteTo
-                    .LiterateConsole(restrictedToMinimumLevel: LogEventLevel.Debug,
-                        outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {SourceContext} {Message}{NewLine}{Exception}")
+            builder.Register<ILogger>(context => new LoggerConfiguration().MinimumLevel.Debug()
+                    .WriteTo.LiterateConsole(LogEventLevel.Debug,
+                        "{Timestamp:HH:mm:ss} [{Level}] {SourceContext} {Message}{NewLine}{Exception}")
+                    .WriteTo.TextWriter(new SyncTextWriter(logWriter), LogEventLevel.Information,
+                        "{Timestamp:HH:mm:ss} [{Level}] {SourceContext} {Message}{NewLine}{Exception}")
                     .CreateLogger())
                 .SingleInstance();
 

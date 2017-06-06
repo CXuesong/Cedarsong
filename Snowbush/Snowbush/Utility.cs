@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using DiffPlex;
@@ -129,6 +130,13 @@ namespace Snowbush
                 }
                 Console.ResetColor();
             }
+        }
+
+        public static string BareDisambigTitle(string originalTitle)
+        {
+            var match = Regex.Match(originalTitle, @".+?(?=\s*\()");
+            if (match.Success) return match.Value;
+            return originalTitle;
         }
     }
 }

@@ -28,6 +28,7 @@ namespace Snowbush.Routines
     {
         private readonly SiteProvider siteProvider;
         private readonly ILogger logger;
+        private int counter;
 
         public UpgradeGeneralInfoboxRoutine(ILogger logger, SiteProvider siteProvider)
         {
@@ -41,11 +42,13 @@ namespace Snowbush.Routines
             var zhSite = await siteProvider.GetSiteAsync("zh", true);
             //var gen = new CategoryMembersGenerator(zhSite, "猫武士分卷")
             //var gen = new CategoryMembersGenerator(zhSite, "猫武士故事")
-            var gen = new CategoryMembersGenerator(zhSite, "猫武士短文")
+            //var gen = new CategoryMembersGenerator(zhSite, "猫武士短文")
+            var gen = new CategoryMembersGenerator(zhSite, "猫物")
             {
                 MemberTypes = CategoryMemberTypes.Page,
-                PagingSize = 10
+                PagingSize = 20
             };
+            counter = 0;
             var sourceBlock = gen.EnumPagesAsync(PageQueryOptions.FetchContent).ToObservable().ToSourceBlock();
             var processorBlock = new ActionBlock<Page>(UpgradeVolumeIB,
                 new ExecutionDataflowBlockOptions {MaxDegreeOfParallelism = 2});
@@ -57,14 +60,30 @@ namespace Snowbush.Routines
 
         private async Task UpgradeVolumeIB(Page page)
         {
-            logger.Information("Start processing {page}", page.Title);
+            var ct = Interlocked.Increment(ref counter);
+            if (ct < 50) return;
+            logger.Information("Start processing {page} (#{counter})", page.Title, ct);
             var parser = new WikitextParser();
             var root = parser.Parse(page.Content);
             var ib = root.EnumDescendants()
                 .OfType<Template>()
                 .First(t => MwParserUtility.NormalizeTitle(t.Name).StartsWith("Infobox "));
             ib.Arguments["orig_title"]?.Remove();
+            var nameOthersArgument = ib.Arguments["name_others"];
+            var nameOthersExpr = "";
+            if (nameOthersArgument != null)
+            {
+                nameOthersArgument.Remove();
+                var value = nameOthersArgument.Value.ToString().Trim();
+                if (value != "")
+                {
+                    logger.Warning("name_others detected on {page} .", page.Title);
+                    nameOthersExpr = "、-{" + value + "}-";
+                }
+            }
             var nameArgument = ib.Arguments["name"];
+            if (nameArgument.ToString().IndexOf("Ruby", StringComparison.OrdinalIgnoreCase) >= 0)
+                logger.Warning("ruby detected on {page} ({content}).", page.Title, nameArgument.ToString());
             //if (nameArgument.EnumDescendants()
             //    .OfType<Template>()
             //    .Any(t => MwParserUtility.NormalizeTitle(t) == "Locale"))
@@ -86,7 +105,8 @@ namespace Snowbush.Routines
                     Arguments =
                     {
                         new TemplateArgument(null, new Wikitext(new Paragraph(new PlainText("us")))),
-                        new TemplateArgument(null, new Wikitext(new Paragraph(new PlainText(en)))),
+                        new TemplateArgument(null,
+                            new Wikitext(new Paragraph(new PlainText(Utility.BareDisambigTitle(en))))),
                     }
                 });
             }
@@ -97,7 +117,7 @@ namespace Snowbush.Routines
                     Arguments =
                     {
                         new TemplateArgument(null, new Wikitext(new Paragraph(new PlainText("cn")))),
-                        new TemplateArgument(null, new Wikitext(new Paragraph(new PlainText(page.Title)))),
+                        new TemplateArgument(null, new Wikitext(new Paragraph(new PlainText("-{" + Utility.BareDisambigTitle(page.Title )+ "}-" + nameOthersExpr)))),
                     }
                 });
                 nameLine.Inlines.Add(new Template(new Run(new PlainText("Locale")))
@@ -105,7 +125,10 @@ namespace Snowbush.Routines
                     Arguments =
                     {
                         new TemplateArgument(null, new Wikitext(new Paragraph(new PlainText("tw")))),
-                        new TemplateArgument(null, new Wikitext(new Paragraph(new PlainText(parsedPage.DisplayTitle)))),
+                        new TemplateArgument(null,
+                            new Wikitext(new Paragraph(
+                                new PlainText("-{" + Utility.BareDisambigTitle(parsedPage.DisplayTitle) + "}-" +
+                                              nameOthersExpr)))),
                     }
                 });
             }
@@ -132,6 +155,7 @@ namespace Snowbush.Routines
                 if (m.Groups[4].Value == "\n") s += "\n";
                 return m.Groups[1].Value + s;
             }, RegexOptions.IgnoreCase);
+            newText = newText.Replace("={{Locale|", "= {{Locale|");
             if (page.Content != newText)
             {
                 Utility.ShowDiff(page.Content, newText);
