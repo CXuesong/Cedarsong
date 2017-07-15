@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Serilog.Core;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Sites;
 
 namespace Snowbush
 {
@@ -45,7 +46,6 @@ namespace Snowbush
             var client = new WikiClient
             {
                 ClientUserAgent = "Snowbush/1.0 (.NET Core; Cedarsong)",
-                ThrottleTime = TimeSpan.FromSeconds(2),
                 Timeout = TimeSpan.FromSeconds(30),
                 RetryDelay = TimeSpan.FromSeconds(10)
             };
@@ -83,7 +83,7 @@ namespace Snowbush
             }
         }
 
-        public static async Task LoginAsync(Site site)
+        public static async Task LoginAsync(WikiSite site)
         {
             Console.WriteLine("=== Login to {0} ===", site);
             TRIAL:
@@ -102,12 +102,12 @@ namespace Snowbush
             }
         }
 
-        public Task<Site> GetSiteAsync(string prefix)
+        public Task<WikiSite> GetSiteAsync(string prefix)
         {
             return GetSiteAsync(prefix, false);
         }
 
-        public async Task<Site> GetSiteAsync(string prefix, bool ensureLoggedIn)
+        public async Task<WikiSite> GetSiteAsync(string prefix, bool ensureLoggedIn)
         {
             if (prefix == null) throw new ArgumentNullException(nameof(prefix));
             var site = await WikiFamily.GetSiteAsync(prefix);
@@ -180,7 +180,7 @@ namespace Snowbush
             }
 
             /// <inheritdoc />
-            protected override async Task<Site> CreateSiteAsync(string prefix, string apiEndpoint)
+            protected override async Task<WikiSite> CreateSiteAsync(string prefix, string apiEndpoint)
             {
                 var site = await base.CreateSiteAsync(prefix, apiEndpoint);
                 site.AccountAssertionFailureHandler = accountAssertionFailureHandler;
@@ -200,7 +200,7 @@ namespace Snowbush
             }
 
             /// <inheritdoc />
-            public async Task<bool> Login(Site site)
+            public async Task<bool> Login(WikiSite site)
             {
                 await LoginAsync(site);
                 _Owner.SaveSession();

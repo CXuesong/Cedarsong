@@ -10,6 +10,7 @@ using MwParserFromScratch.Nodes;
 using Snowbush.CommandLine;
 using WikiClientLibrary;
 using WikiClientLibrary.Generators;
+using WikiClientLibrary.Pages;
 using ILogger = Serilog.ILogger;
 
 namespace Snowbush.Routines

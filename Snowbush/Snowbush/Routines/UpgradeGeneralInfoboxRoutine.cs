@@ -14,6 +14,8 @@ using Serilog.Core;
 using Snowbush.CommandLine;
 using WikiClientLibrary;
 using WikiClientLibrary.Generators;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Sites;
 using ILogger = Serilog.ILogger;
 
 namespace Snowbush.Routines
