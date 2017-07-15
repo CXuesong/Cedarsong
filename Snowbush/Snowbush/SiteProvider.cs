@@ -128,7 +128,7 @@ namespace Snowbush
             var f = new MyFamily(this, "Warriors");
             f.Logger = wclLogger;
             f.Register("en", "http://warriors.wikia.com/api.php");
-            f.Register("zh", "http://warriors.huiji.wiki/api.php");
+            f.Register("zh", "http://warriors.huijiwiki.com/api.php");
             return f;
         }
 
