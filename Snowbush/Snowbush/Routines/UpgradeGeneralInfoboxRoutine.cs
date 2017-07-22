@@ -53,7 +53,7 @@ namespace Snowbush.Routines
             };
             counter = 0;
             var sourceBlock = gen.EnumPagesAsync(PageQueryOptions.FetchContent).ToObservable().ToSourceBlock();
-            var processorBlock = new ActionBlock<Page>(UpgradeVolumeIB,
+            var processorBlock = new ActionBlock<WikiPage>(UpgradeVolumeIB,
                 new ExecutionDataflowBlockOptions {MaxDegreeOfParallelism = 2});
             using (sourceBlock.LinkTo(processorBlock, new DataflowLinkOptions {PropagateCompletion = true}))
             {
@@ -61,7 +61,7 @@ namespace Snowbush.Routines
             }
         }
 
-        private async Task UpgradeVolumeIB(Page page)
+        private async Task UpgradeVolumeIB(WikiPage page)
         {
             var ct = Interlocked.Increment(ref counter);
             if (ct < 50) return;

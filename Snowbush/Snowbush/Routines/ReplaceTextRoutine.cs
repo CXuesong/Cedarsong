@@ -39,7 +39,7 @@ namespace Snowbush.Routines
                 PagingSize = 10
             };
             var sourceBlock = gen.EnumPagesAsync(PageQueryOptions.FetchContent).ToObservable().ToSourceBlock();
-            var processorBlock = new ActionBlock<Page>(ReplaceAsync,
+            var processorBlock = new ActionBlock<WikiPage>(ReplaceAsync,
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 1 });
             using (sourceBlock.LinkTo(processorBlock, new DataflowLinkOptions { PropagateCompletion = true }))
             {
@@ -47,7 +47,7 @@ namespace Snowbush.Routines
             }
         }
 
-        private async Task ReplaceAsync(Page page)
+        private async Task ReplaceAsync(WikiPage page)
         {
             logger.Information("Start processing: {page} .", page.Title);
             var parser = new WikitextParser();

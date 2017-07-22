@@ -17,7 +17,7 @@ namespace Snowbush
     {
         public WikiClient WikiClient { get; }
 
-        public Family WikiFamily { get; }
+        public WikiFamily WikiFamily { get; }
 
         private readonly Serilog.ILogger logger;
 
@@ -123,7 +123,7 @@ namespace Snowbush
 
         #region Site Specific
 
-        private Family WikiFamilyFactory()
+        private WikiFamily WikiFamilyFactory()
         {
             var f = new MyFamily(this, "Warriors");
             f.Logger = wclLogger;
@@ -169,7 +169,7 @@ namespace Snowbush
             }
         }
 
-        private class MyFamily : Family
+        private class MyFamily : WikiFamily
         {
             private readonly IAccountAssertionFailureHandler accountAssertionFailureHandler;
 
