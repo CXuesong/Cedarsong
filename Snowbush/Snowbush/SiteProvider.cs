@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog;
 using Serilog.Core;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
@@ -20,8 +22,9 @@ namespace Snowbush
         public WikiFamily WikiFamily { get; }
 
         private readonly Serilog.ILogger logger;
+        private readonly LoggerFactory loggerFactory;
+        private readonly IAccountAssertionFailureHandler accountAssertionFailureHandler;
 
-        private readonly SerilogWclLogger wclLogger;
 
         private static readonly JsonSerializer cookieSerializer = new JsonSerializer
         {
@@ -31,8 +34,10 @@ namespace Snowbush
         public SiteProvider(string cookiesFileName, Serilog.ILogger logger)
         {
             this.logger = logger.ForContext<SiteProvider>();
-            wclLogger = new SerilogWclLogger(logger);
+            loggerFactory = new LoggerFactory();
+            loggerFactory.AddSerilog(logger);
             CookiesFileName = cookiesFileName;
+            accountAssertionFailureHandler = new MyAccountAssertionFailureHandler(this);
             WikiClient = WikiClientFactory();
             WikiFamily = WikiFamilyFactory();
         }
@@ -47,9 +52,9 @@ namespace Snowbush
             {
                 ClientUserAgent = "Snowbush/1.0 (.NET Core; Cedarsong)",
                 Timeout = TimeSpan.FromSeconds(30),
-                RetryDelay = TimeSpan.FromSeconds(10)
+                RetryDelay = TimeSpan.FromSeconds(10),
+                Logger = loggerFactory.CreateLogger<WikiClient>(),
             };
-            client.Logger = wclLogger;
             if (File.Exists(CookiesFileName))
             {
                 using (var reader = File.OpenText(CookiesFileName))
@@ -125,69 +130,22 @@ namespace Snowbush
 
         private WikiFamily WikiFamilyFactory()
         {
-            var f = new MyFamily(this, "Warriors");
-            f.Logger = wclLogger;
+            var f = new WikiFamily(WikiClient, "Warriors")
+            {
+                Logger = loggerFactory.CreateLogger<WikiFamily>(),
+            };
+            f.SiteCreated += (_, e) =>
+            {
+                e.Site.Logger = loggerFactory.CreateLogger<WikiSite>();
+                e.Site.AccountAssertionFailureHandler = accountAssertionFailureHandler;
+            };
             f.Register("en", "http://warriors.wikia.com/api.php");
             f.Register("zh", "http://warriors.huijiwiki.com/api.php");
+            f.Register("de", "http://de.warrior-cats.wikia.com/api.php");
             return f;
         }
 
         #endregion
-
-        private class SerilogWclLogger : ILogger
-        {
-            public Serilog.ILogger UnderlyingLogger { get; }
-
-            public SerilogWclLogger(Serilog.ILogger logger)
-            {
-                if (logger == null) throw new ArgumentNullException(nameof(logger));
-                UnderlyingLogger = logger;
-            }
-
-            /// <inheritdoc />
-            public void Trace(object source, string message)
-            {
-                UnderlyingLogger.Debug("{source}: {message}", source, message);
-            }
-
-            /// <inheritdoc />
-            public void Info(object source, string message)
-            {
-                UnderlyingLogger.Information("{source}: {message}", source, message);
-            }
-
-            /// <inheritdoc />
-            public void Warn(object source, string message)
-            {
-                UnderlyingLogger.Warning("{source}: {message}", source, message);
-            }
-
-            /// <inheritdoc />
-            public void Error(object source, Exception exception, string message)
-            {
-                UnderlyingLogger.Error(exception, "{source}: {message}", source, message);
-            }
-        }
-
-        private class MyFamily : WikiFamily
-        {
-            private readonly IAccountAssertionFailureHandler accountAssertionFailureHandler;
-
-            /// <inheritdoc />
-            public MyFamily(SiteProvider owner, string name) : base(owner.WikiClient, name)
-            {
-                accountAssertionFailureHandler = new MyAccountAssertionFailureHandler(owner);
-            }
-
-            /// <inheritdoc />
-            protected override async Task<WikiSite> CreateSiteAsync(string prefix, string apiEndpoint)
-            {
-                var site = await base.CreateSiteAsync(prefix, apiEndpoint);
-                site.AccountAssertionFailureHandler = accountAssertionFailureHandler;
-                Logger?.Info(this, $"{site.AccountInfo.Name}@{site.SiteInfo.SiteName}");
-                return site;
-            }
-        }
 
         private class MyAccountAssertionFailureHandler : IAccountAssertionFailureHandler
         {

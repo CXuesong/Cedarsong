@@ -36,7 +36,7 @@ namespace Snowbush.Routines
             var gen = new CategoryMembersGenerator(zhSite, "猫武士短文")
             {
                 MemberTypes = CategoryMemberTypes.Page,
-                PagingSize = 10
+                PaginationSize = 10
             };
             var sourceBlock = gen.EnumPagesAsync(PageQueryOptions.FetchContent).ToObservable().ToSourceBlock();
             var processorBlock = new ActionBlock<WikiPage>(ReplaceAsync,

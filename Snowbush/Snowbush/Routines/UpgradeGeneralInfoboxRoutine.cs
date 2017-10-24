@@ -49,7 +49,7 @@ namespace Snowbush.Routines
             var gen = new CategoryMembersGenerator(zhSite, "猫物")
             {
                 MemberTypes = CategoryMemberTypes.Page,
-                PagingSize = 20
+                PaginationSize = 20
             };
             counter = 0;
             var sourceBlock = gen.EnumPagesAsync(PageQueryOptions.FetchContent).ToObservable().ToSourceBlock();

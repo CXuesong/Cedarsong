@@ -33,7 +33,7 @@ namespace Snowbush.Routines
             var zhSite = await siteProvider.GetSiteAsync("zh");
             using (var sw = File.CreateText(outputPath))
             {
-                var generator = new AllPagesGenerator(zhSite) {PagingSize = 100};
+                var generator = new AllPagesGenerator(zhSite) {PaginationSize = 100};
                 foreach (var ns in zhSite.Namespaces)
                 {
                     if (ns.Id < 0) continue;
