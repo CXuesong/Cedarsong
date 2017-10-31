@@ -11,6 +11,7 @@ using Serilog;
 using Serilog.Core;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
 
 namespace Snowbush
@@ -53,7 +54,7 @@ namespace Snowbush
                 ClientUserAgent = "Snowbush/1.0 (.NET Core; Cedarsong)",
                 Timeout = TimeSpan.FromSeconds(30),
                 RetryDelay = TimeSpan.FromSeconds(10),
-                Logger = loggerFactory.CreateLogger<WikiClient>(),
+                Logger = loggerFactory.CreateLogger("WikiClient"),
             };
             if (File.Exists(CookiesFileName))
             {
@@ -132,11 +133,12 @@ namespace Snowbush
         {
             var f = new WikiFamily(WikiClient, "Warriors")
             {
-                Logger = loggerFactory.CreateLogger<WikiFamily>(),
+                Logger = loggerFactory.CreateLogger("WikiFamily"),
             };
             f.SiteCreated += (_, e) =>
             {
-                e.Site.Logger = loggerFactory.CreateLogger<WikiSite>();
+                e.Site.Logger = loggerFactory.CreateLogger("WikiSite");
+                e.Site.ModificationThrottler.Logger = loggerFactory.CreateLogger("Throttler");
                 e.Site.AccountAssertionFailureHandler = accountAssertionFailureHandler;
             };
             f.Register("en", "http://warriors.wikia.com/api.php");
