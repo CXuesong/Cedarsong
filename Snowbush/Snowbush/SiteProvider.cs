@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Serilog;
 using Serilog.Core;
 using WikiClientLibrary;
+using WikiClientLibrary.Bots;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
@@ -25,12 +26,6 @@ namespace Snowbush
         private readonly Serilog.ILogger logger;
         private readonly LoggerFactory loggerFactory;
         private readonly IAccountAssertionFailureHandler accountAssertionFailureHandler;
-
-
-        private static readonly JsonSerializer cookieSerializer = new JsonSerializer
-        {
-            ContractResolver = new AllPrivateFieldsContractResolver()
-        };
 
         public SiteProvider(string cookiesFileName, Serilog.ILogger logger)
         {
@@ -58,17 +53,9 @@ namespace Snowbush
             };
             if (File.Exists(CookiesFileName))
             {
-                using (var reader = File.OpenText(CookiesFileName))
-                using (var jreader = new JsonTextReader(reader))
+                using (var s = File.OpenRead(CookiesFileName))
                 {
-                    var cookies = cookieSerializer.Deserialize<IList<Cookie>>(jreader);
-                    if (cookies != null)
-                    {
-                        foreach (var c in cookies)
-                        {
-                            client.CookieContainer.Add(c);
-                        }
-                    }
+                    client.CookieContainer = WikiClientUtility.SafeLoadCookies(s);
                 }
             }
             return client;
@@ -80,11 +67,11 @@ namespace Snowbush
         {
             lock (saveSessionLock)
             {
-                using (var writer = File.CreateText(CookiesFileName))
-                using (var jwriter = new JsonTextWriter(writer))
+                using (var s = File.Create(CookiesFileName))
                 {
-                    cookieSerializer.Serialize(jwriter, WikiClient.CookieContainer.EnumAllCookies().ToList());
+                    WikiClientUtility.SafeSaveCookies(s, WikiClient.CookieContainer);
                 }
+
                 logger.Information("Session saved.");
             }
         }

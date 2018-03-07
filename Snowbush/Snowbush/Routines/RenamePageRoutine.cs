@@ -45,7 +45,7 @@ namespace Snowbush.Routines
                         .Concat(new TranscludedInGenerator(site, p.Value).EnumItemsAsync()))
                 .Distinct()
                 .Select(stub => new WikiPage(site, stub.Title));
-            if ((bool)arguments["Move"])
+            if ((bool?)arguments["Move"] ?? false)
             {
                 logger.Information("Will move the pages.");
                 foreach (var p in titles)
@@ -90,9 +90,11 @@ namespace Snowbush.Routines
             }
             foreach (var template in root.EnumDescendants().OfType<Template>())
             {
-                var oldTarget = template.Name.ToString();
+                var oldTarget = template.Name.ToPlainText();
                 var oldTransclusion = MwParserUtility.NormalizeTitle(oldTarget);
                 if (string.IsNullOrEmpty(oldTransclusion)) continue;
+                // This will cause NormalizeWikiLink throwing Exception, becuase it does not have any title part.
+                if (oldTransclusion.StartsWith("#")) continue;
                 var oldTitle = WikiClientLibrary.WikiLink.NormalizeWikiLink(page.Site, oldTransclusion, BuiltInNamespaces.Template);
                 if (titles.TryGetValue(oldTitle, out var newTitle))
                 {
@@ -123,7 +125,14 @@ namespace Snowbush.Routines
                 sb.Append(titles[t]);
             }
             sb.Append('。');
-            await page.UpdateContentAsync(sb.ToString(), true, true);
+            try
+            {
+                await page.UpdateContentAsync(sb.ToString(), true, true);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to update [[{Title}]].");
+            }
         }
 
         /// <summary>

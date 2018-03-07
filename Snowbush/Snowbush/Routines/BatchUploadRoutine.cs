@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Serilog;
 using Snowbush.CommandLine;
 using WikiClientLibrary;
+using WikiClientLibrary.Files;
 using WikiClientLibrary.Pages;
 
 namespace Snowbush.Routines
@@ -28,7 +29,7 @@ namespace Snowbush.Routines
             var rootPath = Path.GetFullPath((string)arguments[0]);
             var site = await siteProvider.GetSiteAsync("zh", true);
             var messageTempate = File.ReadAllText(Path.Combine(rootPath, "Message.txt"));
-            var skippedItems = (int?)arguments["-Skip"]??0;
+            var skippedItems = (int?)arguments["Skip"]??0;
             foreach (var line in File.ReadLines(Path.Combine(rootPath, "Catalog.txt")))
             {
                 if (skippedItems > 0)
@@ -40,7 +41,7 @@ namespace Snowbush.Routines
                 var fields = line.Split('\t');
                 var fileName = fields[0].Trim();
                 var targetTitle = fields[1].Trim();
-                var page = new FilePage(site, targetTitle);
+                var page = new WikiPage(site, targetTitle);
                 await page.RefreshAsync();
                 if (page.Exists)
                 {
@@ -54,7 +55,7 @@ namespace Snowbush.Routines
                     var source = new StreamUploadSource(fs);
                     try
                     {
-                        var result = await page.UploadAsync(source, comment, false);
+                        var result = await site.UploadAsync(page.Title, source, comment, false);
                         if (result.ResultCode == UploadResultCode.Warning)
                         {
                             logger.Warning("Skipped {File} due to warnings: {Warnings}.", fileName, result.Warnings);

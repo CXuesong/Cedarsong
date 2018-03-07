@@ -111,7 +111,7 @@ namespace Snowbush
 
         public string WorkPath { get; set; } = "work";
 
-        public string CookiesFileName { get; set; } = "cookies.json";
+        public string CookiesFileName { get; set; } = "cookies.dat";
 
         public CommandArguments RoutineArguments { get; set; }
 

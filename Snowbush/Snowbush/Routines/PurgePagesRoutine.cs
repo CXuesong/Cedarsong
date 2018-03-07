@@ -39,7 +39,7 @@ namespace Snowbush.Routines
             if (freePages != null)
             {
                 logger.Information("Purging {count} free pages…", freePages.Length);
-                var failed = await freePages.Select(t => WikiPage.FromTitle(site, t)).PurgeAsync(purgeLinks
+                var failed = await freePages.Select(t => new WikiPage(site, t)).PurgeAsync(purgeLinks
                     ? PagePurgeOptions.ForceLinkUpdate
                     : PagePurgeOptions.None);
                 if (failed.Count > 0)

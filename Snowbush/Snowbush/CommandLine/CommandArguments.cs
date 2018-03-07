@@ -76,7 +76,6 @@ namespace Snowbush.CommandLine
 
         public CommandArguments(IEnumerable<CommandArgument> args)
         {
-            namedArguments = new Dictionary<string, CommandArgument>();
             foreach (var a in args)
             {
                 if (a.Name == null)

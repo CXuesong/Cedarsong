@@ -15,6 +15,7 @@ using Snowbush.CommandLine;
 using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Parsing;
 using WikiClientLibrary.Sites;
 using ILogger = Serilog.ILogger;
 
