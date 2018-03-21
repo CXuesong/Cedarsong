@@ -85,6 +85,27 @@ namespace Snowbush.Routines
                 if (titles.TryGetValue(oldTitle, out var newTitle))
                 {
                     link.Target = new Run(new PlainText(ReplaceKeepWhitespaces(oldTarget, newTitle)));
+                    var newTitleBare = Utility.BareDisambigTitle(newTitle);
+                    if (newTitleBare != newTitle)
+                    {
+                        // new title contains disambiguation
+                        // e.g. Cat (animal)
+                        var oldTitleBare = Utility.BareDisambigTitle(oldTitle);
+                        var oldText = link.Text?.ToString();
+                        // We display new link without DAB content, for the following old link cases
+                        // [[Dog]]  --> [[Cat (animal)|Cat]]
+                        // [[Sheep (animal)|Sheep]] --> [[Cat (animal)|Cat]]
+                        // We do not change the display text (leave it as is), for the following old link cases
+                        // [[Sheep (animal)]] --> [[Cat (animal)]]
+                        // [[Sheep (animal)|Ship]] --> [[Cat (animal)|Ship]]
+                        if (string.IsNullOrEmpty(oldText) && oldTitle == oldTitleBare
+                            || oldText == oldTitleBare)
+                        {
+                            // Bare disambig title
+                            link.Text = new Run(new PlainText(ReplaceKeepWhitespaces(oldTitle, newTitleBare)));
+                        }
+                    }
+
                     replacedTitles.Add(oldTitle);
                 }
             }
@@ -93,7 +114,7 @@ namespace Snowbush.Routines
                 var oldTarget = template.Name.ToPlainText();
                 var oldTransclusion = MwParserUtility.NormalizeTitle(oldTarget);
                 if (string.IsNullOrEmpty(oldTransclusion)) continue;
-                // This will cause NormalizeWikiLink throwing Exception, becuase it does not have any title part.
+                // This will cause NormalizeWikiLink throwing Exception, because it does not have any title part.
                 if (oldTransclusion.StartsWith("#")) continue;
                 var oldTitle = WikiClientLibrary.WikiLink.NormalizeWikiLink(page.Site, oldTransclusion, BuiltInNamespaces.Template);
                 if (titles.TryGetValue(oldTitle, out var newTitle))

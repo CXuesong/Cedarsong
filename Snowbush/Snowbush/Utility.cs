@@ -134,6 +134,7 @@ namespace Snowbush
 
         public static string BareDisambigTitle(string originalTitle)
         {
+            if (!originalTitle.Contains('(')) return originalTitle;
             var match = Regex.Match(originalTitle, @".+?(?=\s*\()");
             if (match.Success) return match.Value;
             return originalTitle;
