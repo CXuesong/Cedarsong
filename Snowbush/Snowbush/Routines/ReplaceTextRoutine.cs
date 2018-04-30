@@ -12,6 +12,7 @@ using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
 using ILogger = Serilog.ILogger;
+using WikiLink = MwParserFromScratch.Nodes.WikiLink;
 
 namespace Snowbush.Routines
 {
@@ -31,15 +32,14 @@ namespace Snowbush.Routines
         public async Task PerformAsync(CommandArguments arguments)
         {
             var zhSite = await siteProvider.GetSiteAsync("zh", true);
-            //var gen = new CategoryMembersGenerator(zhSite, "猫武士分卷")
-            //var gen = new CategoryMembersGenerator(zhSite, "猫武士故事")
-            var gen = new CategoryMembersGenerator(zhSite, "猫武士短文")
+            var src = (string)arguments[0];
+            var dest = (string)arguments[1];
+            var gen = new SearchGenerator(zhSite, src)
             {
-                MemberTypes = CategoryMemberTypes.Page,
                 PaginationSize = 10
             };
             var sourceBlock = gen.EnumPagesAsync(PageQueryOptions.FetchContent).ToObservable().ToSourceBlock();
-            var processorBlock = new ActionBlock<WikiPage>(ReplaceAsync,
+            var processorBlock = new ActionBlock<WikiPage>(p => ReplaceAsync(p, src, dest),
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 1 });
             using (sourceBlock.LinkTo(processorBlock, new DataflowLinkOptions { PropagateCompletion = true }))
             {
@@ -47,40 +47,35 @@ namespace Snowbush.Routines
             }
         }
 
-        private async Task ReplaceAsync(WikiPage page)
+        private async Task ReplaceAsync(WikiPage page, string src, string dest)
         {
             logger.Information("Start processing: {page} .", page.Title);
             var parser = new WikitextParser();
             var root = parser.Parse(page.Content);
-            foreach (var locale in root.EnumDescendants()
-                .OfType<Template>()
-                .Where(t => MwParserUtility.NormalizeTitle(t.Name) == "Locale"))
+
+            void Visit(Node node)
             {
-                Node node = locale;
-                while (node != null)
+                if (node is PlainText pt)
                 {
-                    if (node is TemplateArgument arg)
-                    {
-                        if (MwParserUtility.NormalizeTemplateArgumentName(arg.Name) == "name") goto EVAL;
-                        break;
-                    }
-                    node = node.ParentNode;
+                    pt.Content = pt.Content.Replace(src, dest);
+                    return;
+                } else if (node is WikiLink)
+                {
+                    return;
                 }
-                continue;
-                EVAL:
-                var lang = locale.Arguments[1].Value.ToString().Trim().ToLowerInvariant();
-                if (lang == "cn" || lang == "tw")
+                foreach (var child in node.EnumChildren())
                 {
-                    var value = locale.Arguments[2].ToString().Trim();
-                    if (value.StartsWith("-{")) continue;
-                    locale.Arguments[2].Value = new Wikitext(new Paragraph(new PlainText("-{" + value + "}-")));
+                    Visit(child);
                 }
             }
+
+            Visit(root);
+
             var newContent = root.ToString();
             if (newContent == page.Content) return;
             Utility.ShowDiff(page.Content, newContent);
             page.Content = newContent;
-            await page.UpdateContentAsync("机器人：禁用name属性的字形转换。", true, true);
+            await page.UpdateContentAsync($"机器人：替换 {src}→{dest} 。", true, true);
             logger.Information("{page} saved.", page.Title);
         }
     }
