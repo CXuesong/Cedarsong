@@ -34,16 +34,12 @@ namespace Snowbush.Routines
                 PaginationSize = 50,
                 MemberTypes = CategoryMemberTypes.Page,
             };
-            using (var ie = gen.EnumPagesAsync(PageQueryOptions.FetchContent).Buffer(50).GetEnumerator())
+            await foreach (var batch in gen.EnumPagesAsync(PageQueryOptions.FetchContent).Buffer(50))
             {
-                while (await ie.MoveNext())
+                foreach (var p in batch)
                 {
-                    var batch = ie.Current;
-                    foreach (var p in batch)
-                    {
-                        logger.Information("Process {Page}", p);
-                        await ProcessPage(p);
-                    }
+                    logger.Information("Process {Page}", p);
+                    await ProcessPage(p);
                 }
             }
         }

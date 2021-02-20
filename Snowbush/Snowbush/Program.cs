@@ -52,7 +52,7 @@ namespace Snowbush
                 .SingleInstance();
 
             builder.Register<ILogger>(context => new LoggerConfiguration().MinimumLevel.Information()
-                    .WriteTo.LiterateConsole(LogEventLevel.Debug,
+                    .WriteTo.Console(LogEventLevel.Debug,
                         "{Timestamp:HH:mm:ss} [{Level}] {SourceContext} {Message}{NewLine}{Exception}")
                     .WriteTo.TextWriter(new SyncTextWriter(logWriter), LogEventLevel.Information,
                         "{Timestamp:HH:mm:ss} [{Level}] {SourceContext} {Message}{NewLine}{Exception}")

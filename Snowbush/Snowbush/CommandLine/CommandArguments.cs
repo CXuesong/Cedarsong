@@ -96,13 +96,11 @@ namespace Snowbush.CommandLine
                 : emptyDictionary;
             PositionalArguments = positionalArguments != null
                 ? positionalArguments.AsReadOnly()
-                : emptyList;
+                : Array.Empty<CommandArgument>();
         }
 
         private static readonly IReadOnlyDictionary<string, CommandArgument> emptyDictionary
             = new ReadOnlyDictionary<string, CommandArgument>(new Dictionary<string, CommandArgument>());
-
-        private static readonly IReadOnlyList<CommandArgument> emptyList = new CommandArgument[0];
 
         private readonly Dictionary<string, CommandArgument> namedArguments;
         private readonly List<CommandArgument> positionalArguments;

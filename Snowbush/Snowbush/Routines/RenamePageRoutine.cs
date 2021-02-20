@@ -45,7 +45,7 @@ namespace Snowbush.Routines
                         .Concat(new TranscludedInGenerator(site, p.Value).EnumItemsAsync()))
                 .Distinct()
                 .Select(stub => new WikiPage(site, stub.Title));
-            if ((bool?)arguments["Move"] ?? false)
+            if ((bool?) arguments["Move"] ?? false)
             {
                 logger.Information("Will move the pages.");
                 foreach (var p in titles)
@@ -61,15 +61,11 @@ namespace Snowbush.Routines
                     }
                 }
             }
-            using (var ienu = pages.Buffer(50).GetEnumerator())
+            await foreach (var batch in pages.Buffer(50))
             {
-                while (await ienu.MoveNext())
-                {
-                    var batch = ienu.Current;
-                    logger.Information("Fixing links on: {Pages}", batch);
-                    await batch.RefreshAsync(PageQueryOptions.FetchContent);
-                    await Task.WhenAll(batch.Select(ReplaceLinksAsync));
-                }
+                logger.Information("Fixing links on: {Pages}", batch);
+                await batch.RefreshAsync(PageQueryOptions.FetchContent);
+                await Task.WhenAll(batch.Select(ReplaceLinksAsync));
             }
         }
 
@@ -152,7 +148,7 @@ namespace Snowbush.Routines
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Failed to update [[{Title}]].");
+                logger.Error(ex, "Failed to update [[{Title}]].", page.Title);
             }
         }
 

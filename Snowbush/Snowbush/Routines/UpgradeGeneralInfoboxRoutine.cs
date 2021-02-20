@@ -101,7 +101,7 @@ namespace Snowbush.Routines
             nameArgument.Value.Lines.Add(nameLine);
             var parsedPage = await page.Site.ParsePageAsync(page.Title, "zh-tw", ParsingOptions.EffectiveLanguageLinks,
                 CancellationToken.None);
-            var en = parsedPage.Interlanguages.FirstOrDefault(l => l.Language == "en")?.PageTitle;
+            var en = parsedPage.LanguageLinks.FirstOrDefault(l => l.Language == "en")?.Title;
             if (en != null)
             {
                 nameLine.Inlines.Add(new Template(new Run(new PlainText("Locale")))
