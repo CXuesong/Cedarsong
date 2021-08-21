@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Cite Sina Weibo!
 // @namespace    http://cxuesong.com/
-// @version      0.1
+// @version      0.2
 // @description  A script making citations from Sina Weibo easier. Automatically archive cited post with archive.today.
 // @author       CXuesong
 // @updateURL    https://raw.githubusercontent.com/CXuesong/Cedarsong/master/Citations/CiteWeibo.js
@@ -24,6 +24,7 @@
     }
     if (self.origin.startsWith("https://archive.")) {
         // archive.today callback.
+        alert('CB');
         let correlation = location.hash.match(/CC_Correlation_(\d+)/)?.[1];
         if (correlation) {
             sessionStorage.setItem("CC.Correlation", correlation);
@@ -45,8 +46,12 @@
     async function getArchiveInfo(url) {
         const correlation = `${Date.now()}${Math.floor(Math.random()*999)}`;
         const archiveServiceUrl = `https://archive.today/?run=1&url=${encodeURIComponent(url)}#CC_Correlation_${correlation}`;
-        const info = await new Promise(r => {
-            window.open(archiveServiceUrl, "_blank", "resizable,scrollbars,status");
+        const info = await new Promise((r, rej) => {
+            const w = window.open(archiveServiceUrl, "_blank", "resizable,scrollbars,status");
+            if (!w) {
+                alert("请允许弹出窗口。");
+                rej(new Error("Popup window blocked."));
+            }
             const fieldName = `CC.Archiving.${correlation}`;
             let id = GM_addValueChangeListener(fieldName, function(name, old_value, new_value, remote) {
                 console.log("Receieved value for correlation: %s: %s", correlation, new_value);
@@ -59,18 +64,18 @@
         return info;
     }
     async function citeWeiboPost(doc) {
-        let node = document.querySelector(".WB_feed_detail .WB_from a[node-type=feed_list_item_date]");
+        let node = doc.querySelector(".WB_feed_detail .WB_from a[node-type=feed_list_item_date]");
         const date = getDate(new Date(parseInt(node.getAttribute("date"))));
-        node = document.querySelector(".WB_feed_detail .WB_info a[usercard]");
+        node = doc.querySelector(".WB_feed_detail .WB_info a[usercard]");
         const author = node.innerText;
         const title = doc.title.replace(/来自.+ - 微博\s*$/, "").trim();
         const url = (() => {
-            const urlObj = new URL(location);
+            const urlObj = new URL(doc.location);
             urlObj.search = "";
             urlObj.hash = "";
             return String(urlObj);
         })();
-        node = document.querySelector(".WB_feed_detail .WB_text[node-type=feed_list_content]")
+        node = doc.querySelector(".WB_feed_detail .WB_text[node-type=feed_list_content]")
         const quoteDom = node.cloneNode(true);
         // Remove “网页链接”
         quoteDom.querySelectorAll("a[action-type=feed_list_url]").forEach(n => n.remove());
@@ -89,17 +94,19 @@
         // }
         // const parser = new DOMParser();
         // const doc = parser.parseFromString(await resp.text(), "text/html");
-        try {
-            if (new URL(postUrl).pathname === location.pathname) {
-                await citeWeiboPost(document);
-            } else {
-                const w = window.open(postUrl, "_blank", "resizable,scrollbars,status");
-                await new Promise(r => w.addEventListener("load", r));
-                await citeWeiboPost(w.doc);
-                w.close();
-            }
-        } catch (err) {
-            console.error(err);
+        if (new URL(postUrl).pathname === location.pathname) {
+            await citeWeiboPost(document);
+        } else {
+            const w = window.open(postUrl, "_blank", "resizable,scrollbars,status");
+            await new Promise((r, rej) => {
+                if (!w) {
+                    alert("请允许弹出窗口。");
+                    rej(new Error("Popup window blocked."));
+                }
+                w.$$CC_onDomReady = r;
+            });
+            await citeWeiboPost(w.document);
+            w.close();
         }
     }
     window.setTimeout(() => {
@@ -119,6 +126,9 @@
                 return false;
             });
             container.appendChild(citeLink);
+        }
+        if (unsafeWindow.$$CC_onDomReady) {
+            unsafeWindow.$$CC_onDomReady();
         }
     }, 2000);
 })();
