@@ -7,12 +7,16 @@
 // @updateURL    https://raw.githubusercontent.com/CXuesong/Cedarsong/master/Citations/CiteWeibo.js
 // @homepage     https://github.com/CXuesong/Cedarsong/tree/master/Citations
 // @match        https://weibo.com/*
-// @match        https://archive.*/*
+// @match        https://archive.ph/*
 // @grant        GM_setClipboard
 // @grant        GM_addValueChangeListener
 // @grant        GM_removeValueChangeListener
 // @grant        GM_setValue
 // @grant        GM_deleteValue
+// @grant        window.opener
+// @grant        window.postMessage
+// @grant        window.ommessage
+// @grant        window.close
 // ==/UserScript==
 
 (function() {
@@ -24,14 +28,7 @@
     }
     if (self.origin.startsWith("https://archive.")) {
         // archive.today callback.
-        alert('CB');
-        let correlation = location.hash.match(/CC_Correlation_(\d+)/)?.[1];
-        if (correlation) {
-            sessionStorage.setItem("CC.Correlation", correlation);
-        } else {
-            correlation = sessionStorage.getItem("CC.Correlation");
-        }
-        if (!correlation) return;
+        if (!window.opener) return;
         let node = document.querySelector("#SHARE_LONGLINK");
         if (!node) return;
         let link = new URL(node.value);
@@ -39,27 +36,28 @@
         link = String(link);
         node = document.querySelector("time[itemprop=pubdate]");
         const date = getDate(new Date(node.getAttribute("datetime")));
-        GM_setValue(`CC.Archiving.${correlation}`, {link, date});
-        self.close();
+        window.opener.postMessage({type: "CCArchive", link, date}, "*");
+        window.close();
         return;
     }
     async function getArchiveInfo(url) {
         const correlation = `${Date.now()}${Math.floor(Math.random()*999)}`;
-        const archiveServiceUrl = `https://archive.today/?run=1&url=${encodeURIComponent(url)}#CC_Correlation_${correlation}`;
+        const archiveServiceUrl = `https://archive.today/?run=1&url=${encodeURIComponent(url)}`;
         const info = await new Promise((r, rej) => {
             const w = window.open(archiveServiceUrl, "_blank", "resizable,scrollbars,status");
             if (!w) {
                 alert("请允许弹出窗口。");
                 rej(new Error("Popup window blocked."));
             }
-            const fieldName = `CC.Archiving.${correlation}`;
-            let id = GM_addValueChangeListener(fieldName, function(name, old_value, new_value, remote) {
-                console.log("Receieved value for correlation: %s: %s", correlation, new_value);
-                if (!remote) return;
-                GM_removeValueChangeListener(id);
-                r(new_value);
-                GM_deleteValue(fieldName);
-            });
+            function onGuestMessage(e) {
+                const { data } = e;
+                if (e.source === w && data && typeof data === "object" && data.type === "CCArchive") {
+                    r(data);
+                    e.stopImmediatePropagation();
+                    window.removeEventListener("message", onGuestMessage);
+                }
+            }
+            window.addEventListener("message", onGuestMessage);
         });
         return info;
     }
@@ -79,7 +77,7 @@
         const quoteDom = node.cloneNode(true);
         // Remove “网页链接”
         quoteDom.querySelectorAll("a[action-type=feed_list_url]").forEach(n => n.remove());
-        const quote = quoteDom.innerText.replace(/\s+/, " ").trim();
+        const quote = quoteDom.innerText.replace(/\s+/ug, " ").trim();
         const archive = await getArchiveInfo(url);
         const content = `<ref>{{Cite web |url=${url} |title=${title} |accessdate=${getDate(new Date())} |author=${author} `
         + `|work=新浪微博 |date=${date} |archiveurl=${archive.link} |archivedate=${archive.date} |quote=${quote}}}</ref>`;
@@ -106,7 +104,6 @@
                 w.$$CC_onDomReady = r;
             });
             await citeWeiboPost(w.document);
-            w.close();
         }
     }
     window.setTimeout(() => {
@@ -129,6 +126,7 @@
         }
         if (unsafeWindow.$$CC_onDomReady) {
             unsafeWindow.$$CC_onDomReady();
+            window.close();
         }
     }, 2000);
 })();
