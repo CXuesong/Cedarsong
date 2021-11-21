@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Cite Sina Weibo!
 // @namespace    http://cxuesong.com/
-// @version      0.2
+// @version      0.3
 // @description  A script making citations from Sina Weibo easier. Automatically archive cited post with archive.today.
 // @author       CXuesong
 // @updateURL    https://raw.githubusercontent.com/CXuesong/Cedarsong/master/Citations/CiteWeibo.js
@@ -75,11 +75,16 @@
         })();
         node = doc.querySelector(".WB_feed_detail .WB_text[node-type=feed_list_content]")
         const quoteDom = node.cloneNode(true);
+        node.append(quoteDom);
         // Remove “网页链接”
         quoteDom.querySelectorAll("a[action-type=feed_list_url]").forEach(n => n.remove());
         const quote = quoteDom.innerText.replace(/\s+/ug, " ").trim();
+        quoteDom.remove();
+        let content = `<ref>{{Cite web |url=${url} |title=${title} |accessdate=${getDate(new Date())} |author=${author} `
+        + `|work=新浪微博 |date=${date} |archiveurl= |archivedate= |quote=${quote}}}</ref>`;
+        GM_setClipboard(content);
         const archive = await getArchiveInfo(url);
-        const content = `<ref>{{Cite web |url=${url} |title=${title} |accessdate=${getDate(new Date())} |author=${author} `
+        content = `<ref>{{Cite web |url=${url} |title=${title} |accessdate=${getDate(new Date())} |author=${author} `
         + `|work=新浪微博 |date=${date} |archiveurl=${archive.link} |archivedate=${archive.date} |quote=${quote}}}</ref>`;
         console.log(content);
         GM_setClipboard(content);
@@ -106,27 +111,37 @@
             await citeWeiboPost(w.document);
         }
     }
-    window.setTimeout(() => {
-        const feedItems = document.querySelectorAll("[node-type=feed_list] [action-type=feed_list_item]:not([cite-weibo-processed])");
-        for (const fi of feedItems) {
-            fi.setAttribute("cite-weibo-processed", "yes");
-            const container = fi.querySelector(".WB_from");
-            const dateLink = fi.querySelector("a[node-type=feed_list_item_date]");
-            const citeLink = document.createElement("a");
-            const linkTarget = new URL(dateLink.href);
-            linkTarget.search = "";
-            citeLink.innerText = "引用";
-            citeLink.href = "#";
-            citeLink.addEventListener("click", e => {
-                citeFeedItem(String(linkTarget));
-                e.preventDefault();
-                return false;
-            });
-            container.appendChild(citeLink);
+    function processFeedlistItem(fi) {
+        fi.setAttribute("cite-weibo-processed", "yes");
+        const container = fi.querySelector(".WB_from");
+        const dateLink = fi.querySelector("a[node-type=feed_list_item_date]");
+        const citeLink = document.createElement("a");
+        const linkTarget = new URL(dateLink.href);
+        linkTarget.search = "";
+        citeLink.innerText = "引用";
+        citeLink.href = "#";
+        citeLink.addEventListener("click", e => {
+            citeFeedItem(String(linkTarget));
+            e.preventDefault();
+            return false;
+        });
+        container.appendChild(citeLink);
+    }
+    const FI_SELECTOR = "[node-type=feed_list] [action-type=feed_list_item]:not([cite-weibo-processed])";
+    document.addEventListener("mouseover", (e) => {
+        if (e.target.matches(`${FI_SELECTOR} *`)) {
+            document
+                .querySelectorAll(FI_SELECTOR)
+                .forEach(n => processFeedlistItem(n));
         }
+    });
+    window.setTimeout(() => {
+        document
+            .querySelectorAll(FI_SELECTOR)
+            .forEach(n => processFeedlistItem(n));
         if (unsafeWindow.$$CC_onDomReady) {
             unsafeWindow.$$CC_onDomReady();
             window.close();
         }
-    }, 2000);
+    }, 500);
 })();
