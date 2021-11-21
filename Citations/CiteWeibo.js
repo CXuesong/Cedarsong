@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Cite Sina Weibo!
 // @namespace    http://cxuesong.com/
-// @version      0.3
+// @version      0.4
 // @description  A script making citations from Sina Weibo easier. Automatically archive cited post with archive.today.
 // @author       CXuesong
 // @updateURL    https://raw.githubusercontent.com/CXuesong/Cedarsong/master/Citations/CiteWeibo.js
@@ -62,22 +62,22 @@
         return info;
     }
     async function citeWeiboPost(doc) {
-        let node = doc.querySelector(".WB_feed_detail .WB_from a[node-type=feed_list_item_date]");
-        const date = getDate(new Date(parseInt(node.getAttribute("date"))));
-        node = doc.querySelector(".WB_feed_detail .WB_info a[usercard]");
+        let node = doc.querySelector(".Feed_body_3R0rO a.head-info_time_6sFQg");
+        const date = getDate(new Date(node.innerText));
+        node = doc.querySelector(".Feed_body_3R0rO .head_nick_1yix2 a.head_name_24eEB");
         const author = node.innerText;
-        const title = doc.title.replace(/来自.+ - 微博\s*$/, "").trim();
+        const title = doc.title.replace(/@.+的微博 - 微博\s*$/, "").trim();
         const url = (() => {
             const urlObj = new URL(doc.location);
             urlObj.search = "";
             urlObj.hash = "";
             return String(urlObj);
         })();
-        node = doc.querySelector(".WB_feed_detail .WB_text[node-type=feed_list_content]")
+        node = doc.querySelector(".Feed_body_3R0rO .detail_wbtext_4CRf9")
         const quoteDom = node.cloneNode(true);
         node.append(quoteDom);
-        // Remove “网页链接”
-        quoteDom.querySelectorAll("a[action-type=feed_list_url]").forEach(n => n.remove());
+        // // Remove “网页链接”
+        // quoteDom.querySelectorAll("a[action-type=feed_list_url]").forEach(n => n.remove());
         const quote = quoteDom.innerText.replace(/\s+/ug, " ").trim();
         quoteDom.remove();
         let content = `<ref>{{Cite web |url=${url} |title=${title} |accessdate=${getDate(new Date())} |author=${author} `
@@ -113,8 +113,8 @@
     }
     function processFeedlistItem(fi) {
         fi.setAttribute("cite-weibo-processed", "yes");
-        const container = fi.querySelector(".WB_from");
-        const dateLink = fi.querySelector("a[node-type=feed_list_item_date]");
+        const container = fi.querySelector(".head-info_info_2AspQ");
+        const dateLink = fi.querySelector("a.head-info_time_6sFQg");
         const citeLink = document.createElement("a");
         const linkTarget = new URL(dateLink.href);
         linkTarget.search = "";
@@ -127,7 +127,7 @@
         });
         container.appendChild(citeLink);
     }
-    const FI_SELECTOR = "[node-type=feed_list] [action-type=feed_list_item]:not([cite-weibo-processed])";
+    const FI_SELECTOR = "article.Feed_wrap_3v9LH:not([cite-weibo-processed])";
     document.addEventListener("mouseover", (e) => {
         if (e.target.matches(`${FI_SELECTOR} *`)) {
             document
